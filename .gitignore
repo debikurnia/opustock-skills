@@ -1,0 +1,23 @@
+# Build output
+dist/
+*.skill
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Hasil sementara pemrosesan CSV
+*.cleaned.csv
+*.report.json

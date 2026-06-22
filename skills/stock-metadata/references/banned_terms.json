@@ -1,0 +1,140 @@
+{
+  "_comment": "Sumber kebenaran pembersihan. auto_remove = dihapus script tanpa tanya. flag_for_review = HANYA ditandai; Claude memutuskan ganti/biarkan per konteks (penting untuk kata umum spt apple/dove/shell/corona yang bisa berarti buah/burung/kerang/mahkota). acronym_allowlist = boleh huruf besar. Tambah istilah baru di sini, bukan di prosa.",
+
+  "auto_remove": {
+    "ai_process": [
+      "ai", "a.i.", "generative ai", "gen ai", "genai", "ai generated",
+      "ai-generated", "ai art", "ai artwork", "ai image", "ai render",
+      "artificial intelligence", "machine learning", "deep learning",
+      "neural network", "prompt", "prompts", "prompting", "prompt engineering",
+      "negative prompt", "text to image", "text-to-image", "text to video",
+      "text-to-video", "img2img", "txt2img", "image to image",
+      "upscale", "upscaled", "upscaling", "upscaler", "seed", "sampler",
+      "render engine", "render settings", "denoise", "denoising", "cfg",
+      "cfg scale", "lora", "checkpoint", "vae", "style reference", "sref",
+      "workflow", "diffusion", "latent", "inpainting", "outpainting"
+    ],
+    "ai_tools": [
+      "midjourney", "mid journey", "firefly", "adobe firefly", "dall e",
+      "dalle", "dall-e", "sora", "stable diffusion", "stablediffusion",
+      "leonardo", "leonardo ai", "runway", "runwayml", "chatgpt", "gpt",
+      "gpt-4", "flux", "ideogram", "kling", "pika", "pika labs", "luma",
+      "luma ai", "veo", "google veo", "gemini", "imagen", "niji", "nijijourney",
+      "comfyui", "comfy ui", "automatic1111", "a1111", "invokeai", "openai",
+      "anthropic", "claude", "recraft", "krea", "magnific", "topaz", "freepik ai"
+    ]
+  },
+
+  "flag_for_review": {
+    "_comment": "Bukan daftar lengkap; pemicu kewaspadaan. Kata umum (apple, dove, shell, corona, visa, polo, subway, jaguar, puma) WAJIB dinilai per konteks: jika jelas merujuk benda umum bukan brand, biarkan.",
+
+    "brands_tech_electronics": [
+      "apple", "iphone", "ipad", "ipod", "macbook", "imac", "airpods", "android",
+      "samsung", "galaxy", "google", "pixel", "microsoft", "windows", "surface",
+      "xbox", "playstation", "ps5", "nintendo", "switch", "sony", "lg", "dell",
+      "hp", "lenovo", "asus", "acer", "intel", "nvidia", "amd", "qualcomm",
+      "canon", "nikon", "fujifilm", "gopro", "dji", "bose", "jbl", "beats",
+      "dyson", "philips", "huawei", "xiaomi", "oneplus", "oppo", "vivo", "nokia",
+      "tesla", "spacex", "boeing", "airbus"
+    ],
+    "brands_food_beverage": [
+      "coca cola", "coca-cola", "coke", "pepsi", "sprite", "fanta", "mountain dew",
+      "red bull", "monster energy", "gatorade", "nestle", "kelloggs", "oreo",
+      "kitkat", "hershey", "snickers", "mars", "cadbury", "lindt", "ferrero",
+      "nutella", "pringles", "doritos", "lays", "mcdonalds", "burger king",
+      "kfc", "subway", "starbucks", "dunkin", "wendys", "dominos", "pizza hut",
+      "heineken", "budweiser", "corona beer", "guinness", "carlsberg", "stella artois",
+      "jack daniels", "absolut", "smirnoff", "bacardi", "jameson", "lipton",
+      "nescafe", "tropicana", "danone", "kraft", "heinz"
+    ],
+    "brands_beauty_personal": [
+      "loreal", "l'oreal", "maybelline", "mac cosmetics", "sephora", "estee lauder",
+      "clinique", "lancome", "nivea", "dove soap", "olay", "neutrogena", "cerave",
+      "the ordinary", "fenty", "garnier", "pantene", "head and shoulders", "gillette",
+      "axe", "old spice", "colgate", "oral b", "listerine", "johnson and johnson"
+    ],
+    "brands_fashion_luxury": [
+      "nike", "adidas", "puma", "reebok", "under armour", "new balance", "vans",
+      "converse", "asics", "fila", "louis vuitton", "gucci", "chanel", "prada",
+      "versace", "balenciaga", "dior", "hermes", "burberry", "fendi", "givenchy",
+      "valentino", "armani", "dolce gabbana", "rolex", "omega", "cartier", "tag heuer",
+      "patek philippe", "ray ban", "oakley", "zara", "h and m", "uniqlo", "levis",
+      "calvin klein", "tommy hilfiger", "ralph lauren", "lacoste", "supreme", "north face"
+    ],
+    "brands_automotive": [
+      "ferrari", "lamborghini", "porsche", "bmw", "mercedes", "mercedes benz", "audi",
+      "volkswagen", "toyota", "honda", "ford", "chevrolet", "nissan", "hyundai", "kia",
+      "mazda", "subaru", "jeep", "dodge", "cadillac", "bentley", "rolls royce", "bugatti",
+      "maserati", "aston martin", "mclaren", "harley davidson", "ducati", "yamaha bike",
+      "michelin", "goodyear", "bridgestone", "shell oil", "exxon", "bp oil"
+    ],
+    "brands_home_interior_retail": [
+      "ikea", "west elm", "pottery barn", "herman miller", "eames", "wayfair",
+      "crate and barrel", "ashley furniture", "home depot", "lowes", "target store",
+      "walmart", "costco", "best buy", "lego", "barbie doll", "mattel", "hasbro",
+      "amazon", "ebay", "alibaba", "shopify", "fedex", "ups", "dhl"
+    ],
+    "brands_tech_platforms_media": [
+      "netflix", "spotify", "youtube", "instagram", "tiktok", "facebook", "meta",
+      "twitter", "snapchat", "whatsapp", "telegram", "linkedin", "pinterest", "reddit",
+      "twitch", "discord", "zoom", "slack", "adobe", "photoshop", "illustrator",
+      "canva", "figma", "visa card", "mastercard", "paypal", "stripe", "bitcoin logo"
+    ],
+    "ip_characters_franchises": [
+      "disney", "pixar", "dreamworks", "marvel", "avengers", "iron man", "captain america",
+      "hulk", "thor", "spiderman", "spider-man", "black panther", "dc comics", "batman",
+      "superman", "wonder woman", "joker", "aquaman", "flash", "justice league",
+      "star wars", "darth vader", "yoda", "baby yoda", "grogu", "mandalorian", "stormtrooper",
+      "harry potter", "hogwarts", "lord of the rings", "gandalf", "pokemon", "pikachu",
+      "super mario", "luigi", "sonic", "minecraft", "fortnite", "roblox", "among us",
+      "mickey mouse", "minnie mouse", "donald duck", "winnie the pooh", "frozen elsa",
+      "stitch", "minions", "shrek", "hello kitty", "spongebob", "simpsons", "rick and morty",
+      "naruto", "dragon ball", "goku", "one piece", "demon slayer", "transformers",
+      "barbie movie", "james bond", "sherlock holmes", "spongebob squarepants"
+    ],
+    "landmarks_specific": [
+      "eiffel tower", "statue of liberty", "big ben", "taj mahal", "burj khalifa",
+      "colosseum", "sydney opera house", "golden gate bridge", "mount rushmore",
+      "christ the redeemer", "petronas towers", "leaning tower of pisa", "sphinx",
+      "stonehenge", "hollywood sign", "empire state building", "chrysler building",
+      "flatiron building", "one world trade center", "freedom tower", "tokyo tower",
+      "tokyo skytree", "cn tower", "space needle", "gateway arch", "marina bay sands",
+      "the shard", "the gherkin", "lotte world tower", "guggenheim museum",
+      "louvre pyramid", "atomium", "brandenburg gate", "arc de triomphe", "sagrada familia",
+      "burj al arab", "willis tower", "sears tower"
+    ],
+    "editorial_institutions": [
+      "nasa", "esa", "spacex", "fbi", "cia", "nsa", "who", "un", "united nations",
+      "white house", "pentagon", "kremlin", "european union", "interpol", "nato",
+      "world bank", "imf", "red cross", "wwf", "greenpeace", "fda", "cdc", "epa"
+    ],
+    "editorial_events_sports": [
+      "olympics", "olympic", "fifa", "fifa world cup", "world cup", "uefa",
+      "champions league", "premier league", "nba", "nfl", "super bowl", "mlb", "nhl",
+      "wimbledon", "tour de france", "formula 1", "formula one", "nascar", "grand prix",
+      "grammy", "grammys", "oscar", "oscars", "academy awards", "emmy", "golden globes",
+      "cannes festival", "coachella", "met gala", "eurovision", "comic con"
+    ],
+    "editorial_sensitive_topics": [
+      "covid", "covid-19", "coronavirus", "pandemic", "election", "ukraine war",
+      "gaza", "israel war", "police", "military", "army", "navy", "air force",
+      "protest", "riot", "refugee crisis"
+    ],
+    "sensitive_dangerous": [
+      "swastika", "nazi", "isis", "terrorist", "terrorism", "cocaine", "heroin",
+      "meth", "weapon", "gun violence", "massacre", "genocide", "suicide", "racist", "slur"
+    ],
+    "medical_cosmetic_claims": [
+      "cure", "cures", "treatment for", "anti aging proven", "fda approved",
+      "clinically proven", "miracle cure", "guaranteed results", "fat burning guaranteed"
+    ]
+  },
+
+  "acronym_allowlist": [
+    "CGI", "DNA", "RNA", "mRNA", "ATP", "HIV", "PCR", "MRI", "CT", "EKG", "ECG",
+    "3D", "2D", "4D", "4K", "8K", "HD", "UHD", "HDR", "FPS", "UV", "IR", "RGB", "CMYK",
+    "LED", "LCD", "OLED", "UI", "UX", "VR", "AR", "XR",
+    "DJ", "MC", "VIP", "CEO", "SUV", "RV", "GPS", "USB", "WiFi", "QR",
+    "USA", "UK", "EU", "NYC", "LA", "DIY", "PH", "IQ", "SPF", "SEO"
+  ]
+}

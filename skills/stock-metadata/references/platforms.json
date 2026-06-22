@@ -1,0 +1,35 @@
+{
+  "_comment": "Profil per platform. Tambah platform baru (shutterstock, freepik, pond5, 123rf) dengan menyalin blok dan menyesuaikan angkanya. title_discouraged_words = kata yang sebaiknya TIDAK ada di title untuk platform itu.",
+
+  "adobe_stock": {
+    "label": "Adobe Stock",
+    "title_max": 200,
+    "title_ideal_min": 70,
+    "title_ideal_max": 100,
+    "title_max_words": null,
+    "keyword_max": 49,
+    "keyword_recommended_max": 49,
+    "top_keywords_count": 10,
+    "collapse_singular_plural": false,
+    "title_discouraged_words": [],
+    "notes": "Title deskriptif Title Case, ideal 70-100 char. 10 keyword teratas paling berbobot."
+  },
+
+  "vecteezy": {
+    "label": "Vecteezy",
+    "title_max": 70,
+    "title_ideal_min": 20,
+    "title_ideal_max": 65,
+    "title_max_words": 8,
+    "keyword_max": 50,
+    "keyword_recommended_max": 30,
+    "top_keywords_count": 5,
+    "collapse_singular_plural": true,
+    "title_discouraged_words": [
+      "4k", "8k", "uhd", "hd", "footage", "clip", "video",
+      "beautiful", "amazing", "stunning", "gorgeous", "perfect", "best",
+      "awesome", "wonderful", "lovely", "nice", "great", "incredible"
+    ],
+    "notes": "Title 3-8 kata, <70 char, profesional & tanpa adjektiva subjektif/kata resolusi. 5 keyword pertama paling penting. Disarankan 20-30 keyword, satu bentuk per kata (hindari plural+singular)."
+  }
+}
