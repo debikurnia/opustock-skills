@@ -9,7 +9,7 @@ singular/plural pair (`flower`/`flowers`).
 Try it yourself in Claude after installing the `stock-metadata` skill:
 
 > Upload `sample_input.csv` and ask: *"Check and optimize this metadata for Adobe Stock"*
-> or *"...for Vecteezy"* — compare the difference in limits & rules.
+> or *"...for Vecteezy"*, then compare the difference in limits and rules.
 
 Or run the mechanical gate directly:
 
