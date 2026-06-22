@@ -1,5 +1,5 @@
 {
-  "_comment": "Sumber kebenaran pembersihan. auto_remove = dihapus script tanpa tanya. flag_for_review = HANYA ditandai; Claude memutuskan ganti/biarkan per konteks (penting untuk kata umum spt apple/dove/shell/corona yang bisa berarti buah/burung/kerang/mahkota). acronym_allowlist = boleh huruf besar. Tambah istilah baru di sini, bukan di prosa.",
+  "_comment": "Source of truth for cleanup. auto_remove = removed by the script without asking. flag_for_review = ONLY flagged; Claude decides swap/keep per context (important for common words like apple/dove/shell/corona that can mean fruit/bird/shell/crown). acronym_allowlist = allowed in uppercase. Add new terms here, not in prose.",
 
   "auto_remove": {
     "ai_process": [
@@ -26,7 +26,7 @@
   },
 
   "flag_for_review": {
-    "_comment": "Bukan daftar lengkap; pemicu kewaspadaan. Kata umum (apple, dove, shell, corona, visa, polo, subway, jaguar, puma) WAJIB dinilai per konteks: jika jelas merujuk benda umum bukan brand, biarkan.",
+    "_comment": "Not an exhaustive list; an alertness trigger. Common words (apple, dove, shell, corona, visa, polo, subway, jaguar, puma) MUST be judged per context: if they clearly refer to a common object and not a brand, leave them.",
 
     "brands_tech_electronics": [
       "apple", "iphone", "ipad", "ipod", "macbook", "imac", "airpods", "android",

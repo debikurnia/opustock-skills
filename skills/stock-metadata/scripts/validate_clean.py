@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """
-validate_clean.py - Gerbang deterministik metadata stock (multi-platform).
+validate_clean.py - Deterministic gate for stock metadata (multi-platform).
 
-Menangani HANYA yang bisa dipastikan mekanis:
-  - Hitung panjang & jumlah kata Title, jumlah keyword (limit ikut profil platform).
-  - Hapus istilah AI/proses/tool terlarang (auto_remove).
-  - Tandai istilah berisiko IP/brand/landmark/editorial/sensitif (flag_for_review).
-  - Ubah tanda hubung jadi spasi; rapikan spasi.
-  - Lowercase keyword kecuali akronim allowlist.
-  - Buang duplikat (pertahankan urutan) & keyword kosong.
-  - Tandai title yang memuat kata terlarang khusus platform (mis. Vecteezy: "4k","beautiful").
-  - Pertahankan kolom selain Title/Keywords byte-for-byte.
+Handles ONLY what can be determined mechanically:
+  - Count Title length & word count, keyword count (limits follow the platform profile).
+  - Remove banned AI/process/tool terms (auto_remove).
+  - Flag IP/brand/landmark/editorial/sensitive-risky terms (flag_for_review).
+  - Turn hyphens into spaces; tidy whitespace.
+  - Lowercase keywords except allowlisted acronyms.
+  - Drop duplicates (preserving order) & empty keywords.
+  - Flag titles containing platform-specific banned words (e.g. Vecteezy: "4k","beautiful").
+  - Keep columns other than Title/Keywords byte-for-byte.
 
-TIDAK dilakukan (diserahkan ke Claude): rewrite title, ganti istilah IP, urutkan
-keyword berdasarkan relevansi, pangkas >limit (lakukan SETELAH diurutkan).
+NOT done (left to Claude): rewriting titles, swapping IP terms, sorting
+keywords by relevance, trimming >limit (do that AFTER sorting).
 
-Pemakaian:
+Usage:
   python validate_clean.py input.csv --platform adobe_stock --out out.csv --report rep.json
   python validate_clean.py input.csv --platform vecteezy
 """
@@ -54,7 +54,7 @@ def load_platform(path, name):
         data = json.load(f)
     if name not in data:
         avail = [k for k in data if not k.startswith("_")]
-        print(f"ERROR: platform '{name}' tidak ada. Tersedia: {avail}", file=sys.stderr)
+        print(f"ERROR: platform '{name}' not found. Available: {avail}", file=sys.stderr)
         sys.exit(1)
     return data[name]
 
@@ -66,8 +66,8 @@ def find_column(fieldnames, target):
     return None
 
 
-# ---- Morfologi singular/plural (konservatif, tanpa dependensi) ----
-# Plural tak beraturan -> singular.
+# ---- Singular/plural morphology (conservative, no dependencies) ----
+# Irregular plural -> singular.
 IRREGULAR = {
     "children": "child", "people": "person", "men": "man", "women": "woman",
     "feet": "foot", "teeth": "tooth", "geese": "goose", "mice": "mouse",
@@ -75,7 +75,7 @@ IRREGULAR = {
     "nuclei": "nucleus", "phenomena": "phenomenon", "criteria": "criterion",
     "data": "datum",
 }
-# Kata yang +s/+es-nya bermakna BERBEDA -> jangan gabung, cukup peringatkan.
+# Words whose +s/+es form means something DIFFERENT -> don't merge, just warn.
 NO_COLLAPSE = {
     "glass", "good", "arm", "custom", "spectacle", "saving", "green",
     "wood", "work", "draft", "content", "spirit", "manner", "force", "look",
@@ -83,7 +83,7 @@ NO_COLLAPSE = {
 
 
 def plural_relation(x, y):
-    """None | 'collapse' | 'ambiguous' untuk pasangan keyword x,y (lowercase, beda)."""
+    """None | 'collapse' | 'ambiguous' for a keyword pair x,y (lowercase, distinct)."""
     for s, p in ((x, y), (y, x)):
         if IRREGULAR.get(p) == s:
             return "collapse"
@@ -146,13 +146,13 @@ def process_keywords(raw, auto_remove, allow, collapse_plural=False):
         if key in seen:
             issues["removed_duplicate"].append(norm)
             continue
-        # Cek bentuk singular/plural terhadap keyword yang sudah disimpan (Vecteezy).
+        # Check singular/plural forms against already-kept keywords (Vecteezy).
         if collapse_plural:
             dropped = False
             for kept in cleaned:
                 rel = plural_relation(kept.lower(), key)
                 if rel == "collapse":
-                    issues["removed_plural_form"].append(f"{norm} (bentuk lain dari '{kept}')")
+                    issues["removed_plural_form"].append(f"{norm} (another form of '{kept}')")
                     dropped = True
                     break
                 if rel == "ambiguous":
@@ -190,23 +190,23 @@ def process_row(row, title_col, kw_col, auto_remove, flags, allow, plat):
     tlen = len(title)
     twords = len(title.split()) if title else 0
     if tlen == 0:
-        report["violations"].append("title_kosong")
+        report["violations"].append("title_empty")
     elif tlen > t_max:
-        report["violations"].append(f"title_over_limit ({tlen}>{t_max} char) - Claude pangkas")
+        report["violations"].append(f"title_over_limit ({tlen}>{t_max} char) - Claude to trim")
     elif not (t_min_ideal <= tlen <= t_max_ideal):
-        report["warnings"].append(f"title_panjang_{tlen}_char (ideal {t_min_ideal}-{t_max_ideal})")
+        report["warnings"].append(f"title_length_{tlen}_char (ideal {t_min_ideal}-{t_max_ideal})")
     if t_max_words and twords > t_max_words:
-        report["warnings"].append(f"title_{twords}_kata (maks {t_max_words} kata utk platform ini)")
+        report["warnings"].append(f"title_{twords}_words (max {t_max_words} words for this platform)")
 
     banned_in_title = [t for t in auto_remove if contains_term(title, t)]
     if banned_in_title:
-        report["violations"].append("title_istilah_terlarang: " + ", ".join(sorted(set(banned_in_title))))
+        report["violations"].append("title_banned_terms: " + ", ".join(sorted(set(banned_in_title))))
     disc_in_title = [w for w in discouraged if contains_term(title, w)]
     if disc_in_title:
-        report["warnings"].append("title_kata_tidak_disarankan_platform: " + ", ".join(sorted(set(disc_in_title))))
+        report["warnings"].append("title_platform_discouraged_words: " + ", ".join(sorted(set(disc_in_title))))
     title_flags = scan_flags(title, flags)
     if title_flags:
-        report["violations"].append("title_review_IP/sensitif: " + json.dumps(title_flags, ensure_ascii=False))
+        report["violations"].append("title_review_IP/sensitive: " + json.dumps(title_flags, ensure_ascii=False))
 
     # ---------- KEYWORDS ----------
     raw_kw = (row.get(kw_col) or "")
@@ -215,30 +215,30 @@ def process_row(row, title_col, kw_col, auto_remove, flags, allow, plat):
                                    collapse_plural=plat.get("collapse_singular_plural", False))
 
     if ki["removed_banned"]:
-        report["violations"].append("keyword_terlarang_dihapus: " + ", ".join(ki["removed_banned"]))
+        report["violations"].append("keyword_banned_removed: " + ", ".join(ki["removed_banned"]))
     if ki["removed_duplicate"]:
-        report["changes"].append("duplikat_dihapus: " + ", ".join(ki["removed_duplicate"]))
+        report["changes"].append("duplicates_removed: " + ", ".join(ki["removed_duplicate"]))
     if ki["removed_plural_form"]:
-        report["changes"].append("bentuk_singular_plural_digabung: " + "; ".join(ki["removed_plural_form"]))
+        report["changes"].append("singular_plural_merged: " + "; ".join(ki["removed_plural_form"]))
     if ki["ambiguous_forms"]:
-        report["warnings"].append("kemungkinan_bentuk_ganda_perlu_cek: " + "; ".join(ki["ambiguous_forms"]))
+        report["warnings"].append("possible_dual_form_check: " + "; ".join(ki["ambiguous_forms"]))
     if ki["dehyphenated"]:
-        report["changes"].append("tanda_hubung_diubah: " + "; ".join(ki["dehyphenated"]))
+        report["changes"].append("dehyphenated: " + "; ".join(ki["dehyphenated"]))
     if ki["lowercased"]:
-        report["changes"].append("dilowercase: " + "; ".join(ki["lowercased"]))
+        report["changes"].append("lowercased: " + "; ".join(ki["lowercased"]))
     if ki["removed_empty"]:
-        report["changes"].append(f"keyword_kosong_dihapus: {ki['removed_empty']}")
+        report["changes"].append(f"empty_keywords_removed: {ki['removed_empty']}")
 
     if len(cleaned) > kw_max:
         report["violations"].append(
-            f"keyword_over_limit ({len(cleaned)}>{kw_max}) - Claude urutkan lalu pangkas dari ekor")
+            f"keyword_over_limit ({len(cleaned)}>{kw_max}) - Claude to sort then trim from tail")
     elif len(cleaned) > kw_rec:
         report["warnings"].append(
-            f"keyword_{len(cleaned)} (disarankan <= {kw_rec} utk platform ini)")
+            f"keyword_{len(cleaned)} (recommended <= {kw_rec} for this platform)")
 
     kw_flags = scan_flags(", ".join(cleaned), flags)
     if kw_flags:
-        report["violations"].append("keyword_review_IP/sensitif: " + json.dumps(kw_flags, ensure_ascii=False))
+        report["violations"].append("keyword_review_IP/sensitive: " + json.dumps(kw_flags, ensure_ascii=False))
 
     row[kw_col] = ", ".join(cleaned)
     report["meta"] = {
@@ -269,11 +269,11 @@ def main():
         reader = csv.DictReader(f)
         fieldnames = reader.fieldnames
         if not fieldnames:
-            print("ERROR: CSV tanpa header.", file=sys.stderr); sys.exit(1)
+            print("ERROR: CSV has no header.", file=sys.stderr); sys.exit(1)
         title_col = find_column(fieldnames, "title")
         kw_col = find_column(fieldnames, "keywords")
         if not title_col or not kw_col:
-            print(f"ERROR: kolom Title/Keywords tak ditemukan. Header: {fieldnames}", file=sys.stderr)
+            print(f"ERROR: Title/Keywords column not found. Header: {fieldnames}", file=sys.stderr)
             sys.exit(1)
         rows = list(reader)
 
@@ -293,7 +293,7 @@ def main():
         "rows_with_findings": len(reports),
         "title_over_limit": sum(1 for r in reports if any("title_over_limit" in v for v in r["violations"])),
         "keyword_over_limit": sum(1 for r in reports if any("keyword_over_limit" in v for v in r["violations"])),
-        "rows_with_banned_terms": sum(1 for r in reports if any("terlarang" in v for v in r["violations"])),
+        "rows_with_banned_terms": sum(1 for r in reports if any("banned" in v for v in r["violations"])),
         "rows_needing_ip_review": sum(1 for r in reports if any("review_IP" in v for v in r["violations"])),
     }
     with open(report_path, "w", encoding="utf-8") as f:
@@ -301,17 +301,17 @@ def main():
                   f, ensure_ascii=False, indent=2)
 
     print("=" * 60)
-    print(f"LAPORAN PEMBERSIHAN MEKANIS - Platform: {plat['label']}")
+    print(f"MECHANICAL CLEANUP REPORT - Platform: {plat['label']}")
     print("=" * 60)
-    print(f"Total baris            : {summary['total_rows']}")
-    print(f"Baris dengan temuan    : {summary['rows_with_findings']}")
+    print(f"Total rows             : {summary['total_rows']}")
+    print(f"Rows with findings     : {summary['rows_with_findings']}")
     print(f"Title over-limit       : {summary['title_over_limit']}")
     print(f"Keyword over-limit     : {summary['keyword_over_limit']}")
-    print(f"Baris ada istilah AI   : {summary['rows_with_banned_terms']}")
-    print(f"Baris perlu review IP  : {summary['rows_needing_ip_review']}")
-    print(f"\nCSV bersih  -> {out_path}\nLaporan JSON-> {report_path}")
-    print("\nLangkah berikut: Claude baca report.json + cleaned.csv lalu kerjakan")
-    print("PENILAIAN (rewrite title, ganti IP, urutkan keyword, pangkas >limit).")
+    print(f"Rows with banned terms : {summary['rows_with_banned_terms']}")
+    print(f"Rows needing IP review : {summary['rows_needing_ip_review']}")
+    print(f"\nClean CSV   -> {out_path}\nJSON report -> {report_path}")
+    print("\nNext step: Claude reads report.json + cleaned.csv then performs")
+    print("JUDGMENT (rewrite title, swap IP, sort keywords, trim >limit).")
 
 
 if __name__ == "__main__":

@@ -1,78 +1,76 @@
 # Opustock Skills
 
-> Koleksi [Claude Skills](https://www.anthropic.com/news/skills) untuk kontributor **microstock** — mengubah pekerjaan metadata yang membosankan dan rawan salah menjadi langkah satu-perintah yang konsisten, aman, dan siap unggah.
+A small collection of [Claude Skills](https://www.anthropic.com/news/skills) for microstock contributors. The first one cleans and checks asset metadata (titles and keywords) so it is ready to upload.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Skills](https://img.shields.io/badge/skills-1-blue.svg)
 ![Platforms](https://img.shields.io/badge/platforms-Adobe%20Stock%20%7C%20Vecteezy-orange.svg)
 
-Terinspirasi oleh pendekatan [obra/Superpowers](https://github.com/obra/Superpowers): sekumpulan skill kecil yang ter-*compose*, terpicu otomatis, dan punya satu tugas yang dikerjakan dengan baik. Bedanya, koleksi ini fokus pada satu domain — alur kerja **kontributor aset microstock**.
+The idea follows [obra/Superpowers](https://github.com/obra/Superpowers): keep each skill small, focused on one job, and let it trigger on its own when the context fits. This collection narrows that idea to one area, the work a microstock contributor does every day.
 
----
+## What is this?
 
-## Apa ini?
+Each skill is a folder with a `SKILL.md` (the instructions Claude reads) plus any scripts or data it needs. Once you install it, Claude uses it on its own when the context matches, so you do not have to paste long instructions every time.
 
-Setiap skill di sini adalah folder berisi `SKILL.md` (instruksi untuk Claude) ditambah script/data pendukung. Saat di-install, Claude memakainya **otomatis** begitu konteksnya cocok — kamu tidak perlu menyalin-tempel instruksi panjang lagi.
+A few principles run through the collection:
 
-Prinsip desain di seluruh koleksi:
+- **Scripts do the counting, Claude does the judging.** Anything you can count or match exactly (character counts, duplicates, banned terms) belongs in a script. Anything that needs reading the context (accuracy, IP safety, relevance) is left to Claude.
+- **Safe by default.** When something is unclear, flag it for review instead of deleting it quietly.
+- **Rules live in data files.** Lists and limits sit in JSON, not buried in prose, so they are easy to change.
 
-- **Mesin mengerjakan yang mekanis, Claude mengerjakan yang butuh penilaian.** Hal yang bisa dihitung/dicocokkan (jumlah karakter, duplikat, istilah terlarang) ditangani script secara 100% andal; sisanya yang butuh pemahaman (akurasi, keamanan IP, relevansi) ditangani Claude.
-- **Aman secara default.** Lebih baik konservatif daripada agresif: kalau ragu, tandai untuk ditinjau, jangan hapus diam-diam.
-- **Mudah dirawat & diperluas.** Aturan tinggal di file data, bukan terkubur dalam prosa.
-
-## Daftar skill
+## Skills
 
 ### `stock-metadata`
 
-Periksa, bersihkan, dan optimasi `Title` & `Keywords` pada file CSV metadata untuk **Adobe Stock** dan **Vecteezy** (termasuk aset Generative AI). Multi-platform lewat profil.
+Checks, cleans, and optimizes the `Title` and `Keywords` in a metadata CSV for Adobe Stock and Vecteezy, including Generative AI assets. It supports more than one platform through profiles, and it will:
 
-- Menghapus jejak proses AI & nama tool dari metadata.
-- Menandai risiko IP/brand/landmark/karakter/editorial untuk ditinjau.
-- Menegakkan limit per-platform (panjang title, jumlah keyword, kata title terlarang).
-- Membersihkan tanda hubung, huruf besar, duplikat, dan keyword kosong.
-- Khusus Vecteezy: menggabungkan bentuk singular/plural otomatis (aturan satu-bentuk-per-kata).
+- Strip AI-process traces and tool names from the metadata.
+- Flag possible IP, brand, landmark, character, and editorial risks for review.
+- Enforce each platform's limits (title length, keyword count, banned title words).
+- Tidy up hyphens, capitalization, duplicates, and empty keywords.
+- On Vecteezy, merge the singular and plural forms of a word automatically.
 
-Detail di [`skills/stock-metadata/SKILL.md`](skills/stock-metadata/SKILL.md).
+See [`skills/stock-metadata/SKILL.md`](skills/stock-metadata/SKILL.md) for the full rules.
 
-## Instalasi (Claude.ai / Claude Desktop)
+## Installation (Claude.ai / Claude Desktop)
 
-1. Build paket `.skill`:
+1. Build the `.skill` package:
    ```bash
    python scripts/build.py
    ```
-   File hasil ada di `dist/<nama-skill>.skill`.
-2. Di Claude, buka **Settings → Capabilities → Skills → Upload skill**, lalu pilih file `.skill` tadi.
-3. Selesai. Unggah CSV metadata-mu dan minta, mis. *"optimasi metadata ini untuk Vecteezy"* — skill akan aktif sendiri.
+   The file lands in `dist/<skill-name>.skill`.
+2. In Claude, open **Settings > Capabilities > Skills > Upload skill** and pick that file.
+3. Upload your metadata CSV and ask for what you want, for example *"optimize this metadata for Vecteezy"*. The skill takes it from there.
 
-> Tidak ingin build? Setiap folder di `skills/` sudah merupakan skill lengkap; kamu bisa men-zip foldernya sendiri menjadi `.skill` (zip biasa).
+If you would rather not build, every folder under `skills/` is already a complete skill. You can zip the folder yourself into a `.skill`, which is just a normal zip.
 
-## Contoh
+## Examples
 
-Lihat folder [`examples/`](examples/) untuk CSV contoh sebelum/sesudah optimasi.
+The [`examples/`](examples/) folder has a sample CSV before and after optimization.
 
 ## Roadmap
 
-Skill pendukung yang direncanakan untuk koleksi ini:
+Other skills planned for this collection:
 
-- [ ] **Dukungan platform tambahan** — Shutterstock, Freepik, Pond5, 123RF (tinggal menambah profil).
-- [ ] **keyword-research** — menyarankan keyword bernilai-cari dari subjek aset.
-- [ ] **batch-rename** — penamaan file aset yang konsisten dan rapi.
-- [ ] **csv-merge** — menggabungkan/mencocokkan beberapa ekspor metadata.
-- [ ] **release-tracker** — melacak model/property release per aset.
+- [ ] More platforms: Shutterstock, Freepik, Pond5, 123RF (each one is a new profile).
+- [ ] `keyword-research`: suggest searchable, high-value keywords from an asset's subject.
+- [ ] `batch-rename`: consistent, tidy asset filenames.
+- [ ] `csv-merge`: combine or reconcile several metadata exports.
+- [ ] `release-tracker`: track model and property releases per asset.
 
-Punya ide? Buka issue.
+Have an idea? Open an issue.
 
-## Kontribusi
+## Contributing
 
-Lihat [CONTRIBUTING.md](CONTRIBUTING.md). Singkatnya: satu skill = satu folder di `skills/` berisi `SKILL.md`.
+See [CONTRIBUTING.md](CONTRIBUTING.md). The short version: one skill is one folder under `skills/` with a `SKILL.md` inside.
 
-## Lisensi
+## License
 
 [MIT](LICENSE) © 2026 Debi Kurnia
 
-## Penulis
+## Author
 
-**Debi Kurnia** — kontributor microstock & pembuat tooling.
+**Debi Kurnia**, microstock contributor and tooling builder.
 GitHub: [@debikurnia](https://github.com/debikurnia)
 
-Jika koleksi ini membantu alur kerjamu, beri ⭐ pada repo ini.
+If this helps your workflow, a star on the repo is appreciated.

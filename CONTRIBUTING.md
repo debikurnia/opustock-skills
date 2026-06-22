@@ -1,42 +1,42 @@
-# Berkontribusi
+# Contributing
 
-Terima kasih atas minatmu untuk berkontribusi! Koleksi ini sederhana secara struktur: **satu skill = satu folder di `skills/`**.
+Thanks for your interest in contributing! This collection is structurally simple: **one skill = one folder under `skills/`**.
 
-## Anatomi sebuah skill
+## Anatomy of a skill
 
 ```
-skills/<nama-skill>/
-├── SKILL.md            # wajib: frontmatter (name, description) + instruksi
-├── scripts/            # opsional: kode untuk tugas deterministik
-└── references/         # opsional: data/aturan yang dibaca script atau Claude
+skills/<skill-name>/
+├── SKILL.md            # required: frontmatter (name, description) + instructions
+├── scripts/            # optional: code for deterministic tasks
+└── references/         # optional: data/rules read by scripts or Claude
 ```
 
-`SKILL.md` diawali frontmatter YAML:
+`SKILL.md` starts with YAML frontmatter:
 
 ```yaml
 ---
-name: nama-skill
+name: skill-name
 description: >-
-  Apa yang dilakukan skill ini DAN kapan harus dipakai. Bagian ini adalah
-  pemicu utama, jadi sebutkan konteks/frasa yang harus mengaktifkannya.
+  What this skill does AND when to use it. This part is the primary
+  trigger, so mention the contexts/phrases that should activate it.
 ---
 ```
 
-## Prinsip yang kami ikuti
+## Principles we follow
 
-1. **Pisahkan mekanis dari penilaian.** Kalau sesuatu bisa dihitung atau dicocokkan dengan andal, taruh di script. Sisakan penilaian (akurasi, relevansi, keamanan IP) untuk Claude.
-2. **Aman secara default.** Saat ragu, tandai untuk ditinjau alih-alih menghapus diam-diam.
-3. **Aturan sebagai data, bukan prosa.** Daftar (istilah terlarang, limit platform) tinggal di file `references/` agar mudah dirawat.
-4. **Jelaskan "mengapa".** Instruksi yang menjelaskan alasannya lebih mudah diikuti dengan benar daripada deretan perintah kaku.
+1. **Separate mechanical from judgment.** If something can be counted or matched reliably, put it in a script. Leave judgment (accuracy, relevance, IP safety) to Claude.
+2. **Safe by default.** When in doubt, flag for review instead of silently deleting.
+3. **Rules as data, not prose.** Lists (banned terms, platform limits) live in `references/` files so they're easy to maintain.
+4. **Explain the "why".** Instructions that explain their reasoning are easier to follow correctly than a stream of rigid commands.
 
-## Menambah skill baru
+## Adding a new skill
 
-1. Fork repo & buat branch.
-2. Buat folder `skills/<nama-skill>/` berisi minimal `SKILL.md`.
-3. Uji secara lokal: install paket `.skill`-nya (`python scripts/build.py`) lalu coba di Claude dengan beberapa prompt realistis.
-4. Perbarui daftar skill & roadmap di `README.md`.
-5. Ajukan Pull Request dengan deskripsi singkat: apa yang dilakukan skill, kapan terpicu, dan bagaimana kamu mengujinya.
+1. Fork the repo & create a branch.
+2. Create a `skills/<skill-name>/` folder containing at least a `SKILL.md`.
+3. Test locally: install the `.skill` package (`python scripts/build.py`) then try it in Claude with a few realistic prompts.
+4. Update the skill list & roadmap in `README.md`.
+5. Open a Pull Request with a short description: what the skill does, when it triggers, and how you tested it.
 
-## Melaporkan masalah
+## Reporting issues
 
-Buka issue dengan contoh input (boleh disensor) dan hasil yang kamu harapkan vs yang kamu dapat.
+Open an issue with sample input (feel free to redact) and the result you expected vs what you got.

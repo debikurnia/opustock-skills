@@ -1,163 +1,163 @@
 ---
 name: stock-metadata
 description: >-
-  Periksa, bersihkan, dan optimasi metadata stock (Title & Keywords) pada file CSV untuk
-  marketplace aset stock seperti Adobe Stock dan Vecteezy, termasuk aset Generative AI
-  (video maupun gambar). WAJIB gunakan skill ini setiap kali user mengunggah atau menyebut
-  file CSV metadata stock, atau meminta untuk: memeriksa/membersihkan/mengoptimasi title dan
-  keyword, melaporkan pelanggaran IP/brand/keyword terlarang/keyword stuffing/over-limit,
-  menghapus jejak proses AI dari metadata, menyiapkan metadata untuk diunggah ke Adobe Stock
-  atau Vecteezy — BAHKAN bila kata "skill" tidak disebut. Pemicu meliputi: CSV berkolom
-  Filename/Title/Keywords, frasa "metadata stock", "optimasi keyword", "cek CSV", "bersihkan
-  keyword AI", "review metadata aset", "siapkan untuk Vecteezy/Adobe Stock".
+  Check, clean, and optimize stock metadata (Title & Keywords) in CSV files for
+  stock asset marketplaces such as Adobe Stock and Vecteezy, including Generative AI
+  assets (video or image). ALWAYS use this skill whenever the user uploads or mentions
+  a stock metadata CSV file, or asks to: check/clean/optimize titles and keywords,
+  report IP/brand/banned-keyword/keyword-stuffing/over-limit violations, remove traces
+  of the AI process from metadata, prepare metadata for upload to Adobe Stock or
+  Vecteezy — EVEN if the word "skill" is not mentioned. Triggers include: a CSV with
+  Filename/Title/Keywords columns, phrases like "stock metadata", "optimize keywords",
+  "check CSV", "clean AI keywords", "review asset metadata", "prepare for Vecteezy/Adobe Stock".
 ---
 
-# Optimasi Metadata Stock (Multi-Platform)
+# Stock Metadata Optimization (Multi-Platform)
 
-Skill untuk memeriksa, membersihkan, dan mengoptimasi `Title` dan `Keywords` pada file CSV
-metadata untuk marketplace stock. Mendukung beberapa platform via profil (lihat
-`references/platforms.json`); saat ini: **Adobe Stock** dan **Vecteezy**. Berlaku untuk semua
-jenis aset (realistic, abstract, 3D, CGI, illustration, lifestyle, nature, beauty, food,
-interior, science, dll), dengan perhatian khusus pada aset Generative AI: semua jejak proses
-pembuatan AI harus hilang dari metadata.
+A skill to check, clean, and optimize the `Title` and `Keywords` in metadata CSV files
+for stock marketplaces. Supports multiple platforms via profiles (see
+`references/platforms.json`); currently: **Adobe Stock** and **Vecteezy**. Applies to all
+asset types (realistic, abstract, 3D, CGI, illustration, lifestyle, nature, beauty, food,
+interior, science, etc.), with special attention to Generative AI assets: all traces of the
+AI creation process must be removed from the metadata.
 
-## Prinsip inti
+## Core principle
 
-Pekerjaan terbagi dua, dan masing-masing dikerjakan pihak yang paling andal:
+The work splits in two, and each part is done by whoever is most reliable at it:
 
-1. **Mekanis** (hitung karakter/kata/keyword, deteksi duplikat & istilah terlarang, lowercase,
-   dehyphen) -> `scripts/validate_clean.py`. Jangan menghitung manual; jalankan script.
-2. **Penilaian** (apakah title sesuai visual, istilah IP mana yang diganti & apa penggantinya,
-   urutan relevansi keyword) -> Claude. Ini butuh pemahaman, bukan aturan kaku.
+1. **Mechanical** (count characters/words/keywords, detect duplicates & banned terms, lowercase,
+   dehyphenate) -> `scripts/validate_clean.py`. Do not count by hand; run the script.
+2. **Judgment** (whether the title matches the visual, which IP terms to swap and what to swap
+   them for, keyword relevance ordering) -> Claude. This needs understanding, not rigid rules.
 
-## Mode CSV-saja (penting)
+## CSV-only mode (important)
 
-File CSV **tidak berisi gambar**. "Visual aset" hanya tersirat dari gabungan Title + Keywords
-yang sudah ada. Karena itu:
+The CSV file **contains no images**. The "asset visual" is only implied by the combination of
+the existing Title + Keywords. Because of that:
 
-- **Jangan pernah mengarang detail visual baru** yang tidak didukung metadata asli (warna,
-  objek, setting yang tidak disebut di mana pun). Bekerjalah dari yang ada.
-- Tugasmu: buat metadata itu akurat, ringkas, aman, dan terurut kuat -- bukan menambah klaim.
-- Jika sebuah baris metadatanya terlalu miskin untuk dinilai, katakan terus terang dan minta
-  user melengkapi, daripada menebak.
+- **Never invent new visual details** that aren't supported by the original metadata (colors,
+  objects, settings mentioned nowhere). Work from what's there.
+- Your job: make that metadata accurate, concise, safe, and strongly ordered -- not to add claims.
+- If a row's metadata is too sparse to judge, say so plainly and ask the user to fill it in,
+  rather than guessing.
 
-## Alur kerja
+## Workflow
 
-### 1. Tentukan platform
+### 1. Determine the platform
 
-Tanyakan atau simpulkan platform target (Adobe Stock atau Vecteezy). Jika user tidak menyebut
-dan tidak bisa disimpulkan dari konteks, **tanyakan dulu** -- karena limit & aturan title
-berbeda. Lihat `references/platforms.json` untuk profil yang tersedia.
+Ask or infer the target platform (Adobe Stock or Vecteezy). If the user doesn't mention one
+and it can't be inferred from context, **ask first** -- because the limits & title rules
+differ. See `references/platforms.json` for the available profiles.
 
-### 2. Jalankan gerbang deterministik
+### 2. Run the deterministic gate
 
 ```bash
 python scripts/validate_clean.py <input.csv> --platform <adobe_stock|vecteezy> \
   --out <input>.cleaned.csv --report <input>.report.json
 ```
 
-Menghasilkan CSV yang sudah dibersihkan mekanis + laporan JSON per baris. Script: hitung
-panjang/kata Title & jumlah keyword (sesuai limit platform), hapus istilah AI/tool/proses,
-dehyphen, lowercase kecuali akronim, buang duplikat & keyword kosong, tandai kata title yang
-tidak disarankan platform, dan **menandai** istilah berisiko IP untuk kamu tinjau. Kolom
-`Filename`, `Category`, `Releases` tidak disentuh.
+Produces a mechanically cleaned CSV + a per-row JSON report. The script: counts Title
+length/words & keyword count (per the platform limit), removes AI/tool/process terms,
+dehyphenates, lowercases except acronyms, drops duplicates & empty keywords, flags title words
+the platform discourages, and **flags** IP-risky terms for you to review. The `Filename`,
+`Category`, and `Releases` columns are left untouched.
 
-### 3. Laporkan temuan
+### 3. Report findings
 
-Baca `report.json`. Sajikan ringkasan per kategori dengan referensi `Filename`:
-IP/brand/trademark; nama orang/karakter; landmark/lokasi spesifik; editorial/institusi/
-event; konten sensitif/klaim medis; istilah AI/tool (sudah dihapus -- laporkan saja);
-teknis title; teknis keyword; keyword stuffing/spekulatif/tidak relevan.
+Read `report.json`. Present a summary per category referencing the `Filename`:
+IP/brand/trademark; person/character names; specific landmarks/locations; editorial/institutions/
+events; sensitive content/medical claims; AI/tool terms (already removed -- just report them);
+title technical; keyword technical; keyword stuffing/speculative/irrelevant.
 
-**Penting soal istilah yang ditandai (flag_for_review):** banyak brand berupa kata umum
-(apple, dove, shell, corona, polo, jaguar, puma, subway, visa). Nilai per konteks: jika jelas
-merujuk benda umum (buah apel, burung dara) dan bukan brand, **biarkan**. Hanya ganti bila
-benar-benar merujuk merek/IP terproteksi.
+**Important note on flagged terms (flag_for_review):** many brands are common words
+(apple, dove, shell, corona, polo, jaguar, puma, subway, visa). Judge per context: if it clearly
+refers to a common object (the apple fruit, a dove bird) and not a brand, **leave it**. Only swap
+when it genuinely refers to a protected brand/IP.
 
-### 4. Optimasi penilaian per baris
+### 4. Per-row judgment optimization
 
-Terapkan aturan TITLE (sesuai platform), KEYWORD, dan GANTI-IP di bawah. Baris yang sudah
-bersih dan tidak melanggar **biarkan apa adanya** -- jangan menulis ulang tanpa alasan.
+Apply the TITLE (per platform), KEYWORD, and IP-SWAP rules below. Rows that are already clean
+and not in violation **leave as-is** -- don't rewrite without a reason.
 
-### 5. Kembalikan hasil
+### 5. Return the result
 
-- File **CSV final siap unggah** (gunakan tool file / `present_files`); tawarkan fenced CSV
-  bila diminta.
-- **Ringkasan perubahan** ringkas + contoh before/after 2-3 baris yang paling berubah.
-- Jangan ubah `Filename`, `Category`, `Releases`.
+- The **final upload-ready CSV** (use the file tool / `present_files`); offer a fenced CSV
+  if asked.
+- A **concise change summary** + 2-3 before/after examples of the rows that changed most.
+- Don't change `Filename`, `Category`, `Releases`.
 
-## Aturan TITLE (sesuai platform)
+## TITLE rules (per platform)
 
-Tulis ulang hanya jika melanggar/lemah. Hindari title generik kosong ("Loop", "Abstract
-Background") kecuali itu memang deskripsi terjujur. Jangan mengesankan aset sintetis sebagai
-dokumentasi dunia nyata bila tidak jelas. **Dilarang keras di semua platform:** "Generative
-AI", "AI", nama model/tool AI, istilah prompt, klaim teknis proses produksi.
+Rewrite only if in violation/weak. Avoid empty generic titles ("Loop", "Abstract
+Background") unless that genuinely is the most honest description. Don't make a synthetic asset
+look like real-world documentation when it isn't clear. **Strictly forbidden on all platforms:**
+"Generative AI", "AI", AI model/tool names, prompt terms, technical production-process claims.
 
-**Adobe Stock:** Title Case, deskriptif, ideal 70-100 char (maks 200). Pola:
-`[subjek utama] + [deskriptor/aksi] + [setting/konteks]`.
-Contoh: `Glowing Blue Neon Light Flowing in Seamless Motion on a Dark Background`
+**Adobe Stock:** Title Case, descriptive, ideally 70-100 chars (max 200). Pattern:
+`[main subject] + [descriptor/action] + [setting/context]`.
+Example: `Glowing Blue Neon Light Flowing in Seamless Motion on a Dark Background`
 
-**Vecteezy:** ringkas **3-8 kata, di bawah 70 karakter**, profesional & gramatikal.
-**Jangan** masukkan kata resolusi/teknis ("4K", "footage", "video", "HD") atau adjektiva
-subjektif ("beautiful", "amazing", "stunning", "perfect") -- script menandainya.
-Contoh: `Neon Light Flowing on Dark Background`
+**Vecteezy:** concise **3-8 words, under 70 characters**, professional & grammatical.
+**Do not** include resolution/technical words ("4K", "footage", "video", "HD") or subjective
+adjectives ("beautiful", "amazing", "stunning", "perfect") -- the script flags them.
+Example: `Neon Light Flowing on Dark Background`
 
-Jika title over-limit, pangkas dari klausa ekor, jangan buang subjek utamanya.
+If the title is over the limit, trim from the trailing clause, don't drop the main subject.
 
-## Aturan KEYWORD
+## KEYWORD rules
 
-- Lowercase kecuali akronim umum (CGI, DNA, mRNA, 3D, 4K, dll) -- ditangani script.
-- **Urutkan dari paling relevan ke paling lemah** sebagai langkah eksplisit. Keyword awal
-  diberi bobot lebih oleh pencarian: **Adobe Stock = 10 teratas**, **Vecteezy = 5 teratas**.
-- **Heuristik urutan:** (1) subjek utama, (2) elemen visual menonjol, (3) setting/environment,
-  (4) material/tekstur/warna/lighting, (5) mood/konsep relevan, (6) istilah teknis/gaya
-  (loop, seamless, animation, CGI, 3D render, motion graphics) **paling akhir & hanya bila
-  benar-benar sesuai**.
-- **Limit:** Adobe Stock maks 49; Vecteezy maks 50 (disarankan ~20-30, minimum 5). Jika
-  setelah diurutkan masih melebihi, pangkas dari ekor.
-- **Pangkas yang lemah** meski belum mencapai limit: buang keyword spekulatif, terlalu generik,
-  atau tidak didukung metadata. Presisi > panjang. Jangan paksakan paket keyword seragam.
-- Vecteezy: aturan **satu bentuk per kata** kini otomatis -- script menggabungkan pasangan
-  singular/plural yang muncul bersamaan (mis. flower+flowers, child+children) dan
-  mempertahankan kemunculan pertama. Untuk pasangan ambigu yang bermakna beda (mis.
-  glass/glasses, arm/arms) script TIDAK menggabung tapi menandainya
-  `kemungkinan_bentuk_ganda_perlu_cek` -- tinjau dan putuskan secara manual.
+- Lowercase except common acronyms (CGI, DNA, mRNA, 3D, 4K, etc.) -- handled by the script.
+- **Order from most relevant to weakest** as an explicit step. Early keywords are weighted
+  more heavily by search: **Adobe Stock = top 10**, **Vecteezy = top 5**.
+- **Ordering heuristic:** (1) main subject, (2) prominent visual elements, (3) setting/environment,
+  (4) material/texture/color/lighting, (5) relevant mood/concept, (6) technical/style terms
+  (loop, seamless, animation, CGI, 3D render, motion graphics) **last & only when
+  genuinely applicable**.
+- **Limits:** Adobe Stock max 49; Vecteezy max 50 (recommended ~20-30, minimum 5). If after
+  ordering it still exceeds, trim from the tail.
+- **Trim the weak** even before reaching the limit: drop speculative, overly generic, or
+  metadata-unsupported keywords. Precision > length. Don't force a uniform keyword pack.
+- Vecteezy: the **one-form-per-word** rule is now automatic -- the script merges singular/plural
+  pairs that appear together (e.g. flower+flowers, child+children) and keeps the first
+  occurrence. For ambiguous pairs that mean something different (e.g. glass/glasses, arm/arms)
+  the script does NOT merge but flags them `possible_dual_form_check` -- review and decide
+  manually.
 
-## Gerbang keamanan Generative AI
+## Generative AI safety gate
 
-Ditegakkan otomatis (lihat `references/banned_terms.json`), tapi tetap periksa: tidak boleh
-ada nama model/tool (Midjourney, Firefly, DALL-E, Sora, Stable Diffusion, Runway, dll),
-istilah proses (prompt, upscale, seed, text to image, render engine), nama artist/studio,
-atau frasa "in the style of ...". Selalu pilih deskripsi visual generik daripada referensi
-spesifik berisiko IP.
+Enforced automatically (see `references/banned_terms.json`), but still check: there must be no
+model/tool names (Midjourney, Firefly, DALL-E, Sora, Stable Diffusion, Runway, etc.),
+process terms (prompt, upscale, seed, text to image, render engine), artist/studio names,
+or "in the style of ..." phrases. Always prefer a generic visual description over a specific
+IP-risky reference.
 
-## Tabel penggantian IP aman
+## Safe IP replacement table
 
-Saat script menandai `flag_for_review` dan istilahnya memang merujuk merek/IP terproteksi:
+When the script flags `flag_for_review` and the term genuinely refers to a protected brand/IP:
 
-| Ditemukan | Ganti dengan (contoh) |
+| Found | Replace with (example) |
 |---|---|
-| Brand/produk (Coca-Cola, iPhone) | "red soda can", "modern smartphone" |
-| Landmark spesifik (Eiffel Tower) | "ornate iron lattice tower at dusk" |
-| Nama orang nyata | "businesswoman", "young athlete" |
-| Karakter/franchise | "cartoon superhero figure" |
-| Nama artist / style artist | "impressionist style", "vibrant brushstrokes" |
-| Lembaga (NASA, FBI) | "space agency style emblem", "investigator" |
-| Event bermerek (Olympics) | "international sports event" |
-| Klaim medis/kosmetik | netralkan: "skincare", "wellness"; buang "proven/cure" |
+| Brand/product (Coca-Cola, iPhone) | "red soda can", "modern smartphone" |
+| Specific landmark (Eiffel Tower) | "ornate iron lattice tower at dusk" |
+| Real person's name | "businesswoman", "young athlete" |
+| Character/franchise | "cartoon superhero figure" |
+| Artist name / artist style | "impressionist style", "vibrant brushstrokes" |
+| Institution (NASA, FBI) | "space agency style emblem", "investigator" |
+| Branded event (Olympics) | "international sports event" |
+| Medical/cosmetic claim | neutralize: "skincare", "wellness"; drop "proven/cure" |
 
-**Flag manual** (laporkan walau tak tertangkap script): nama bangunan modern berhak cipta
-arsitektur, kata mirip brand, slogan/trade dress, klaim medis berlebihan.
+**Manual flags** (report even if the script doesn't catch them): names of modern buildings with
+architectural copyright, brand-like words, slogans/trade dress, exaggerated medical claims.
 
-## Format output
+## Output format
 
-Pertahankan kolom asli (`Filename, Title, Keywords, Category, Releases`, dan kolom lain bila
-ada). Keywords dipisah `, `. Output akhir = CSV lengkap (file unduhan), bukan cuplikan,
-kecuali user minta sample.
+Preserve the original columns (`Filename, Title, Keywords, Category, Releases`, and any other
+columns present). Keywords separated by `, `. The final output = the full CSV (a downloadable
+file), not a snippet, unless the user asks for a sample.
 
-## Merawat & memperluas
+## Maintaining & extending
 
-- Tambah nama tool AI / brand / istilah terlarang baru ke `references/banned_terms.json`.
-- Tambah platform baru (Shutterstock, Freepik, Pond5, 123RF) dengan menyalin satu blok di
-  `references/platforms.json` dan menyesuaikan limit + aturan title-nya. Tidak perlu mengubah
+- Add new AI tool / brand / banned terms to `references/banned_terms.json`.
+- Add a new platform (Shutterstock, Freepik, Pond5, 123RF) by copying a block in
+  `references/platforms.json` and adjusting its limits + title rules. No need to change the
   script.
