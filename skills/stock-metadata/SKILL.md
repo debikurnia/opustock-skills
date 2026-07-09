@@ -28,7 +28,7 @@ The work splits in two, and each part goes to whoever is most reliable at it:
 1. **Mechanical** (count characters/words/keywords, detect duplicates and banned terms, lowercase,
    dehyphenate) goes to `scripts/validate_clean.py`. Do not count by hand; run the script.
 2. **Judgment** (whether the title matches the visual, which IP terms to swap and what to swap
-   them for, keyword relevance ordering) goes to Claude. This needs understanding, not rigid rules.
+   them for, keyword relevance ordering) goes to the LLM. This needs understanding, not rigid rules.
 
 ## CSV-only mode (important)
 
@@ -82,7 +82,7 @@ and not in violation **leave as-is**. Don't rewrite without a reason.
 
 ### 5. Return the result
 
-- The **final upload-ready CSV** (use the file tool / `present_files`); offer a fenced CSV
+- The **final upload-ready CSV** (present as a downloadable file); offer a fenced CSV
   if asked.
 - A **concise change summary**, plus 2-3 before/after examples of the rows that changed most.
 - Don't change `Filename`, `Category`, `Releases`.

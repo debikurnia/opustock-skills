@@ -1,6 +1,6 @@
 # Opustock Skills
 
-A small collection of [Claude Skills](https://www.anthropic.com/news/skills) for microstock contributors. The first one cleans and checks asset metadata (titles and keywords) so it is ready to upload.
+A small collection of AI Skills for microstock contributors. These skills work with any coding agent or AI tool that supports the [Superpowers](https://github.com/obra/Superpowers) skill format ([Claude](https://www.anthropic.com/news/skills), [OpenCode](https://opencode.ai), Antigravity, Codex, Cursor, and more). The first one cleans and checks asset metadata (titles and keywords) so it is ready to upload.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Skills](https://img.shields.io/badge/skills-1-blue.svg)
@@ -10,11 +10,11 @@ The idea follows [obra/Superpowers](https://github.com/obra/Superpowers): keep e
 
 ## What is this?
 
-Each skill is a folder with a `SKILL.md` (the instructions Claude reads) plus any scripts or data it needs. Once you install it, Claude uses it on its own when the context matches, so you do not have to paste long instructions every time.
+Each skill is a folder with a `SKILL.md` (the instructions the AI reads) plus any scripts or data it needs. Once you install it, the AI uses it on its own when the context matches, so you do not have to paste long instructions every time.
 
 A few principles run through the collection:
 
-- **Scripts do the counting, Claude does the judging.** Anything you can count or match exactly (character counts, duplicates, banned terms) belongs in a script. Anything that needs reading the context (accuracy, IP safety, relevance) is left to Claude.
+- **Scripts do the counting, AI does the judging.** Anything you can count or match exactly (character counts, duplicates, banned terms) belongs in a script. Anything that needs reading the context (accuracy, IP safety, relevance) is left to the LLM.
 - **Safe by default.** When something is unclear, flag it for review instead of deleting it quietly.
 - **Rules live in data files.** Lists and limits sit in JSON, not buried in prose, so they are easy to change.
 
@@ -32,7 +32,9 @@ Checks, cleans, and optimizes the `Title` and `Keywords` in a metadata CSV for A
 
 See [`skills/stock-metadata/SKILL.md`](skills/stock-metadata/SKILL.md) for the full rules.
 
-## Installation (Claude.ai / Claude Desktop)
+## Installation
+
+### Claude.ai / Claude Desktop
 
 1. Build the `.skill` package:
    ```bash
@@ -43,6 +45,23 @@ See [`skills/stock-metadata/SKILL.md`](skills/stock-metadata/SKILL.md) for the f
 3. Upload your metadata CSV and ask for what you want, for example *"optimize this metadata for Vecteezy"*. The skill takes it from there.
 
 If you would rather not build, every folder under `skills/` is already a complete skill. You can zip the folder yourself into a `.skill`, which is just a normal zip.
+
+### OpenCode
+
+1. Copy the skill folder into OpenCode's skills directory:
+   ```bash
+   cp -r skills/stock-metadata ~/.claude/skills/stock-metadata
+   ```
+   Or place it in your project: `.claude/skills/stock-metadata/` or `.opencode/skills/stock-metadata/`.
+2. Restart OpenCode. The skill auto-activates when the context matches.
+3. Upload your metadata CSV and ask for what you want, for example *"optimize this metadata for Vecteezy"*.
+
+### Codex, Cursor, Antigravity, and other Superpowers-compatible tools
+
+These tools support skills through plugin marketplaces. To use this skill:
+
+1. Build the skill package: `python scripts/build.py`
+2. Install it via your tool's plugin system, or package it as a plugin following the [Superpowers](https://github.com/obra/Superpowers) convention for your specific tool.
 
 ## Examples
 

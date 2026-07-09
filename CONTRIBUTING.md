@@ -8,7 +8,7 @@ Thanks for your interest in contributing! This collection is structurally simple
 skills/<skill-name>/
 ├── SKILL.md            # required: frontmatter (name, description) + instructions
 ├── scripts/            # optional: code for deterministic tasks
-└── references/         # optional: data/rules read by scripts or Claude
+└── references/         # optional: data/rules read by scripts or the AI
 ```
 
 `SKILL.md` starts with YAML frontmatter:
@@ -24,7 +24,7 @@ description: >-
 
 ## Principles we follow
 
-1. **Separate mechanical from judgment.** If something can be counted or matched reliably, put it in a script. Leave judgment (accuracy, relevance, IP safety) to Claude.
+1. **Separate mechanical from judgment.** If something can be counted or matched reliably, put it in a script. Leave judgment (accuracy, relevance, IP safety) to the LLM.
 2. **Safe by default.** When in doubt, flag for review instead of silently deleting.
 3. **Rules as data, not prose.** Lists (banned terms, platform limits) live in `references/` files so they're easy to maintain.
 4. **Explain the "why".** Instructions that explain their reasoning are easier to follow correctly than a stream of rigid commands.
@@ -33,7 +33,7 @@ description: >-
 
 1. Fork the repo and create a branch.
 2. Create a `skills/<skill-name>/` folder containing at least a `SKILL.md`.
-3. Test locally: install the `.skill` package (`python scripts/build.py`) then try it in Claude with a few realistic prompts.
+3. Test locally: install the `.skill` package (`python scripts/build.py`) then try it in Claude or OpenCode with a few realistic prompts.
 4. Update the skill list and roadmap in `README.md`.
 5. Open a Pull Request with a short description: what the skill does, when it triggers, and how you tested it.
 
