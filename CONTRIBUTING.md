@@ -33,7 +33,7 @@ description: >-
 
 1. Fork the repo and create a branch.
 2. Create a `skills/<skill-name>/` folder containing at least a `SKILL.md`.
-3. Test locally: install the `.skill` package (`python scripts/build.py`) then try it in Claude or OpenCode with a few realistic prompts.
+3. Test locally: install the `.skill` package (`python scripts/build.py`) then try it in Claude or Codex with a few realistic prompts.
 4. Update the skill list and roadmap in `README.md`.
 5. Open a Pull Request with a short description: what the skill does, when it triggers, and how you tested it.
 

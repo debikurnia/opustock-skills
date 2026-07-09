@@ -1,12 +1,12 @@
 # Opustock Skills
 
-A small collection of AI Skills for microstock contributors. These skills work with any coding agent or AI tool that supports the [Superpowers](https://github.com/obra/Superpowers) skill format ([Claude](https://www.anthropic.com/news/skills), [OpenCode](https://opencode.ai), Antigravity, Codex, Cursor, and more). The first one cleans and checks asset metadata (titles and keywords) so it is ready to upload.
+A small collection of AI Skills (for [Claude](https://www.anthropic.com/news/skills) and Codex IDE) for microstock contributors. The first one cleans and checks asset metadata (titles and keywords) so it is ready to upload.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Skills](https://img.shields.io/badge/skills-1-blue.svg)
 ![Platforms](https://img.shields.io/badge/platforms-Adobe%20Stock%20%7C%20Vecteezy-orange.svg)
 
-The idea follows [obra/Superpowers](https://github.com/obra/Superpowers): keep each skill small, focused on one job, and let it trigger on its own when the context fits. This collection narrows that idea to one area, the work a microstock contributor does every day.
+The idea is simple: keep each skill small, focused on one job, and let it trigger on its own when the context fits. This collection narrows that idea to one area, the work a microstock contributor does every day.
 
 ## What is this?
 
@@ -46,22 +46,11 @@ See [`skills/stock-metadata/SKILL.md`](skills/stock-metadata/SKILL.md) for the f
 
 If you would rather not build, every folder under `skills/` is already a complete skill. You can zip the folder yourself into a `.skill`, which is just a normal zip.
 
-### OpenCode
+### Codex IDE
 
-1. Copy the skill folder into OpenCode's skills directory:
-   ```bash
-   cp -r skills/stock-metadata ~/.claude/skills/stock-metadata
-   ```
-   Or place it in your project: `.claude/skills/stock-metadata/` or `.opencode/skills/stock-metadata/`.
-2. Restart OpenCode. The skill auto-activates when the context matches.
+1. Build the `.skill` package as above.
+2. In Codex, install the skill via the plugin system or place the skill folder into Codex's skills/plugins directory.
 3. Upload your metadata CSV and ask for what you want, for example *"optimize this metadata for Vecteezy"*.
-
-### Codex, Cursor, Antigravity, and other Superpowers-compatible tools
-
-These tools support skills through plugin marketplaces. To use this skill:
-
-1. Build the skill package: `python scripts/build.py`
-2. Install it via your tool's plugin system, or package it as a plugin following the [Superpowers](https://github.com/obra/Superpowers) convention for your specific tool.
 
 ## Examples
 
