@@ -6,7 +6,18 @@ The project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-No unreleased changes yet.
+### Added
+
+- Structured GitHub issue forms for bugs, metadata terms, platform requests, and new skill proposals.
+- A Pull Request template with metadata-rule, platform-evidence, validation, release-impact, and security checks.
+- `SECURITY.md` with private vulnerability-reporting guidance and supported-version policy.
+- `CODEOWNERS` coverage for governance, release, metadata-rule, script, and test paths.
+- Governance regression tests for required community files and high-impact review rules.
+
+### Changed
+
+- Expanded contribution requirements for metadata terms and platform profiles.
+- Moved sensitive conduct reports away from public issue details.
 
 ## [1.0.0] - 2026-07-27
 
