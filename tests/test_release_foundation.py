@@ -24,18 +24,22 @@ class ReleaseFoundationTests(unittest.TestCase):
         self.assertIn(f"## [{version}]", changelog)
         self.assertIn(f"releases/tag/v{version}", changelog)
 
-    def test_release_workflow_builds_checksums_and_publishes_assets(self):
+    def test_release_workflow_builds_publishes_and_verifies_assets(self):
         workflow = RELEASE_WORKFLOW.read_text(encoding="utf-8")
 
         required_fragments = (
-            "permissions:\n  contents: write",
+            "permissions:\n  contents: write\n  statuses: write",
             "python scripts/build.py",
             "sha256sum ./*.skill > SHA256SUMS.txt",
             "git tag -a",
+            "gh release view",
             "gh release create",
+            "gh release download",
             "dist/*.skill",
             "dist/SHA256SUMS.txt",
-            "--generate-notes",
+            "sha256sum -c SHA256SUMS.txt",
+            "release/${TAG}",
+            "state=success",
         )
         for fragment in required_fragments:
             with self.subTest(fragment=fragment):
