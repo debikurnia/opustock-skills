@@ -1,5 +1,5 @@
 {
-  "_comment": "Source of truth for cleanup. auto_remove = removed by the script without asking. flag_for_review = ONLY flagged; Claude decides swap/keep per context (important for common words like apple/dove/shell/corona that can mean fruit/bird/shell/crown). acronym_allowlist = allowed in uppercase. Add new terms here, not in prose.",
+  "_comment": "Source of truth for cleanup. auto_remove = removed by the script without asking. flag_for_review = only flagged; the judgment stage decides whether to replace or keep each term in context. Common words such as apple, dove, shell, and corona require contextual review. acronym_allowlist = allowed in uppercase. Add new terms here, not in prose.",
 
   "auto_remove": {
     "ai_process": [

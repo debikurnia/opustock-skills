@@ -9,6 +9,10 @@ __pycache__/
 .venv/
 venv/
 
+# Test and coverage output
+.coverage
+htmlcov/
+
 # OS
 .DS_Store
 Thumbs.db
@@ -18,6 +22,6 @@ Thumbs.db
 .idea/
 *.swp
 
-# Hasil sementara pemrosesan CSV
+# Temporary CSV processing output
 *.cleaned.csv
 *.report.json
