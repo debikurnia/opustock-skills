@@ -1,32 +1,42 @@
 {
-  "_comment": "Source of truth for cleanup. auto_remove = removed by the script without asking. flag_for_review = only flagged; the judgment stage decides whether to replace or keep each term in context. Common words such as apple, dove, shell, and corona require contextual review. acronym_allowlist = allowed in uppercase. Add new terms here, not in prose.",
+  "_comment": "Source of truth for cleanup. auto_remove contains high-confidence production markers and qualified tool names that may be removed mechanically. contextual_review contains ambiguous terms that must be preserved for contextual judgment. flag_for_review contains IP, editorial, medical, and sensitive terms that are preserved and reported. acronym_allowlist preserves approved uppercase forms.",
 
   "auto_remove": {
     "ai_process": [
       "ai", "a.i.", "generative ai", "gen ai", "genai", "ai generated",
       "ai-generated", "ai art", "ai artwork", "ai image", "ai render",
-      "artificial intelligence", "machine learning", "deep learning",
-      "neural network", "prompt", "prompts", "prompting", "prompt engineering",
+      "prompt", "prompts", "prompting", "prompt engineering",
       "negative prompt", "text to image", "text-to-image", "text to video",
       "text-to-video", "img2img", "txt2img", "image to image",
       "upscale", "upscaled", "upscaling", "upscaler", "seed", "sampler",
       "render engine", "render settings", "denoise", "denoising", "cfg",
       "cfg scale", "lora", "checkpoint", "vae", "style reference", "sref",
-      "workflow", "diffusion", "latent", "inpainting", "outpainting"
+      "inpainting", "outpainting"
     ],
     "ai_tools": [
-      "midjourney", "mid journey", "firefly", "adobe firefly", "dall e",
-      "dalle", "dall-e", "sora", "stable diffusion", "stablediffusion",
-      "leonardo", "leonardo ai", "runway", "runwayml", "chatgpt", "gpt",
-      "gpt-4", "flux", "ideogram", "kling", "pika", "pika labs", "luma",
-      "luma ai", "veo", "google veo", "gemini", "imagen", "niji", "nijijourney",
-      "comfyui", "comfy ui", "automatic1111", "a1111", "invokeai", "openai",
-      "anthropic", "claude", "recraft", "krea", "magnific", "topaz", "freepik ai"
+      "midjourney", "mid journey", "adobe firefly", "dall e",
+      "dalle", "dall-e", "stable diffusion", "stablediffusion",
+      "leonardo ai", "runwayml", "chatgpt", "gpt", "gpt-4",
+      "pika labs", "luma ai", "google veo", "nijijourney",
+      "comfyui", "comfy ui", "automatic1111", "a1111", "invokeai",
+      "openai", "anthropic", "krea", "magnific", "freepik ai"
+    ]
+  },
+
+  "contextual_review": {
+    "ai_subject_or_process": [
+      "artificial intelligence", "machine learning", "deep learning",
+      "neural network", "workflow", "diffusion", "latent"
+    ],
+    "ambiguous_tool_names": [
+      "firefly", "sora", "leonardo", "runway", "flux", "ideogram",
+      "kling", "pika", "luma", "veo", "gemini", "imagen", "niji",
+      "claude", "recraft", "topaz"
     ]
   },
 
   "flag_for_review": {
-    "_comment": "Not an exhaustive list; an alertness trigger. Common words (apple, dove, shell, corona, visa, polo, subway, jaguar, puma) MUST be judged per context: if they clearly refer to a common object and not a brand, leave them.",
+    "_comment": "Not an exhaustive legal list. Common words and ambiguous names must be judged from the complete title and keyword context.",
 
     "brands_tech_electronics": [
       "apple", "iphone", "ipad", "ipod", "macbook", "imac", "airpods", "android",
