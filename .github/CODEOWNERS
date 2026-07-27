@@ -1,0 +1,15 @@
+# Default review owner
+* @debikurnia
+
+# High-impact governance and release paths
+/.github/ @debikurnia
+/SECURITY.md @debikurnia
+/CODE_OF_CONDUCT.md @debikurnia
+/CONTRIBUTING.md @debikurnia
+/RELEASING.md @debikurnia
+/CHANGELOG.md @debikurnia
+
+# Metadata behavior and platform rules
+/skills/stock-metadata/references/ @debikurnia
+/skills/stock-metadata/scripts/ @debikurnia
+/tests/ @debikurnia
