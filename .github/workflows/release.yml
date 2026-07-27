@@ -1,0 +1,119 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "skills/**"
+      - "scripts/**"
+      - "tests/**"
+      - "CHANGELOG.md"
+      - ".github/workflows/release.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Read skill version
+        id: version
+        shell: bash
+        run: |
+          VERSION="$(python - <<'PY'
+          from pathlib import Path
+          import re
+
+          content = Path("skills/stock-metadata/SKILL.md").read_text(encoding="utf-8")
+          match = re.search(r'^  version: "([0-9]+\.[0-9]+\.[0-9]+)"$', content, re.MULTILINE)
+          if not match:
+              raise SystemExit("Unable to read semantic version from SKILL.md")
+          print(match.group(1))
+          PY
+          )"
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "tag=v${VERSION}" >> "${GITHUB_OUTPUT}"
+
+      - name: Check whether release already exists
+        id: existing
+        shell: bash
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/${{ steps.version.outputs.tag }}" > /dev/null 2>&1; then
+            echo "exists=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "exists=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Compile Python source
+        if: steps.existing.outputs.exists == 'false'
+        run: python -m compileall -q scripts skills tests
+
+      - name: Validate JSON reference files
+        if: steps.existing.outputs.exists == 'false'
+        run: |
+          python -m json.tool skills/stock-metadata/references/banned_terms.json > /dev/null
+          python -m json.tool skills/stock-metadata/references/platforms.json > /dev/null
+
+      - name: Run unit tests
+        if: steps.existing.outputs.exists == 'false'
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Build skill packages
+        if: steps.existing.outputs.exists == 'false'
+        run: python scripts/build.py
+
+      - name: Validate built package
+        if: steps.existing.outputs.exists == 'false'
+        run: python -m unittest tests.test_skill_structure.SkillStructureTests.test_built_archive_contains_required_skill_file -v
+
+      - name: Create checksum
+        if: steps.existing.outputs.exists == 'false'
+        shell: bash
+        run: |
+          cd dist
+          sha256sum ./*.skill > SHA256SUMS.txt
+
+      - name: Create and push tag
+        if: steps.existing.outputs.exists == 'false'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.version.outputs.tag }}" -m "Opustock Skills ${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
+
+      - name: Publish GitHub Release
+        if: steps.existing.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" \
+            dist/*.skill \
+            dist/SHA256SUMS.txt \
+            --verify-tag \
+            --generate-notes \
+            --latest \
+            --title "Opustock Skills ${{ steps.version.outputs.tag }}"
+
+      - name: Report existing release
+        if: steps.existing.outputs.exists == 'true'
+        run: echo "${{ steps.version.outputs.tag }} already exists; no release was created."

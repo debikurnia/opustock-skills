@@ -5,6 +5,7 @@ Open-source metadata safety and workflow skills for stock contributors.
 Opustock Skills helps turn messy asset metadata into cleaner, safer, platform-aware titles and keywords before submission.
 
 [![CI](https://github.com/debikurnia/opustock-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/debikurnia/opustock-skills/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/debikurnia/opustock-skills)](https://github.com/debikurnia/opustock-skills/releases/latest)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Skills](https://img.shields.io/badge/skills-1-blue.svg)
 ![Platforms](https://img.shields.io/badge/platforms-Adobe%20Stock%20%7C%20Vecteezy-orange.svg)
@@ -83,28 +84,48 @@ Opustock Skills is the open-source, self-managed side of that mission. Prefer a 
 ## Requirements and compatibility
 
 - The instructions use the portable Agent Skills format.
-- Python 3.10 or newer is required to run the bundled scripts and package builder.
+- Python 3.10 or newer is required only when running the bundled scripts or building from source.
 - No external Python packages or network access are required at runtime.
 - Installation and automatic activation behavior can vary between compatible AI environments.
 
 ## Install
 
-### Build the skill package
+### Download the stable package
 
-```bash
-python scripts/build.py
-```
+This is the recommended option for most users.
 
-The package is written to `dist/<skill-name>.skill`.
+1. Open the [latest GitHub Release](https://github.com/debikurnia/opustock-skills/releases/latest).
+2. Download `stock-metadata.skill`.
+3. Optionally download `SHA256SUMS.txt` and verify the package:
 
-Every folder under `skills/` is also a complete skill. A `.skill` file is a ZIP archive containing the skill folder at the archive root.
+   ```bash
+   sha256sum -c SHA256SUMS.txt
+   ```
+
+   On macOS:
+
+   ```bash
+   shasum -a 256 -c SHA256SUMS.txt
+   ```
+
+4. Upload the `.skill` file using the supported workflow in your AI environment.
 
 ### Install in a compatible environment
 
-- In ChatGPT Skills, choose **Create**, then **Upload from your computer**, and select the generated `.skill` file.
+- In ChatGPT Skills, choose **Create**, then **Upload from your computer**, and select `stock-metadata.skill`.
 - In Codex or another Agent Skills-compatible client, install the package or skill folder using that client's supported workflow.
 
 After installation, upload your metadata CSV and ask for what you need, for example: *"Optimize this metadata for Vecteezy."*
+
+### Build from source
+
+```bash
+git clone https://github.com/debikurnia/opustock-skills.git
+cd opustock-skills
+python scripts/build.py
+```
+
+The package is written to `dist/stock-metadata.skill`. Every folder under `skills/` is also a complete skill, and the `.skill` package is a ZIP archive containing the skill folder at the archive root.
 
 ### Run the deterministic gate directly
 
@@ -119,11 +140,16 @@ python skills/stock-metadata/scripts/validate_clean.py \
 Run the quality checks locally:
 
 ```bash
-python -m unittest discover -s tests -v
+python -m unittest discover -s tests -p "test_*.py" -v
 python scripts/build.py
+python -m unittest tests.test_skill_structure.SkillStructureTests.test_built_archive_contains_required_skill_file -v
 ```
 
-The GitHub Actions workflow runs tests, validates the JSON reference files, compiles the Python source, builds every skill, and checks the resulting package structure.
+GitHub Actions runs tests, validates the JSON reference files, compiles the Python source, builds every skill, and checks the resulting package structure.
+
+## Releases
+
+See [`CHANGELOG.md`](CHANGELOG.md) for version history and [`RELEASING.md`](RELEASING.md) for the automated release process. Stable releases include a ready-to-upload `.skill` package and a SHA-256 checksum file.
 
 ## Examples
 
