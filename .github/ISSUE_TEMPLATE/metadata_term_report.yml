@@ -1,0 +1,113 @@
+name: Metadata term report
+description: Propose adding, removing, or reclassifying a metadata term.
+title: "[Metadata term]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Term changes can remove or preserve contributor metadata. Provide both positive and false-positive examples so the treatment can be reviewed safely.
+
+  - type: input
+    id: term
+    attributes:
+      label: Exact term
+      description: Enter the exact word or phrase, including punctuation or spacing variants when relevant.
+      placeholder: machine learning
+    validations:
+      required: true
+
+  - type: dropdown
+    id: current_treatment
+    attributes:
+      label: Current treatment
+      options:
+        - auto_remove
+        - contextual_review
+        - flag_for_review
+        - not currently listed
+        - unsure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: requested_treatment
+    attributes:
+      label: Requested treatment
+      options:
+        - auto_remove
+        - contextual_review
+        - flag_for_review
+        - remove from all lists
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Relevant platform
+      options:
+        - All supported platforms
+        - Adobe Stock
+        - Vecteezy
+        - Other or unsupported
+        - Not platform-specific
+    validations:
+      required: true
+
+  - type: textarea
+    id: remove_example
+    attributes:
+      label: Example where the term should be removed or flagged
+      description: Provide a realistic title or keyword context and explain the intended treatment.
+      placeholder: "generated with Adobe Firefly" should remove the qualified tool name.
+    validations:
+      required: true
+
+  - type: textarea
+    id: preserve_example
+    attributes:
+      label: False-positive example where the term should be preserved
+      description: Required whenever the word can describe a legitimate subject, setting, concept, person, place, or material.
+      placeholder: "firefly glowing in forest" should preserve firefly as the visible subject.
+    validations:
+      required: false
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: Explain why the current treatment is unsafe, incomplete, or inaccurate.
+    validations:
+      required: true
+
+  - type: textarea
+    id: sources
+    attributes:
+      label: Supporting sources
+      description: Link current official marketplace documentation when the proposal depends on a platform rule.
+      placeholder: One source per line
+    validations:
+      required: false
+
+  - type: textarea
+    id: variants
+    attributes:
+      label: Related variants or overlaps
+      description: List spelling variants, qualified names, plural forms, or overlapping categories that should be checked.
+      placeholder: firefly, Adobe Firefly
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I reviewed TERM_POLICY.md and selected the narrowest appropriate treatment.
+          required: true
+        - label: I searched the existing rule data and open issues for this term.
+          required: true
+        - label: This proposal is not a bulk list copied from an unverified source.
+          required: true
+        - label: I understand that accepted behavior changes require a regression test.
+          required: true
