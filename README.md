@@ -4,11 +4,12 @@ Open-source metadata safety and workflow skills for stock contributors.
 
 Opustock Skills helps turn messy asset metadata into cleaner, safer, platform-aware titles and keywords before submission.
 
+[![CI](https://github.com/debikurnia/opustock-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/debikurnia/opustock-skills/actions/workflows/ci.yml)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Skills](https://img.shields.io/badge/skills-1-blue.svg)
 ![Platforms](https://img.shields.io/badge/platforms-Adobe%20Stock%20%7C%20Vecteezy-orange.svg)
 
-Each skill is small, focused on one job, and triggers when the context fits. This collection focuses on stock marketplace workflows where accuracy, metadata quality, and IP-term safety matter.
+Each skill is small, focused on one job, and activates when the context fits. This collection focuses on stock marketplace workflows where accuracy, metadata quality, and IP-term safety matter.
 
 ## Why this exists
 
@@ -26,38 +27,38 @@ Doing that by hand across hundreds of assets and several platforms is slow and e
 
 A raw clip export straight out of a generative-AI workflow:
 
-```
+```text
 Title      Generative AI Abstract Loop Animation
 Keywords   ai, generative ai, abstract, abstract, blue, anti-aging, glowing,
            Midjourney, 3D, CGI, motion, loop, neon, neon, dark background,
 ```
 
-The mechanical gate cleans everything that can be checked exactly and flags the rest:
+The deterministic gate cleans everything that can be checked exactly and flags the rest:
 
-```
-Title      Generative AI Abstract Loop Animation      (flagged: title still says "AI" / "Generative AI")
+```text
+Title      Generative AI Abstract Loop Animation      (flagged: title contains banned terms)
 Keywords   abstract, blue, anti aging, glowing, 3D, CGI, motion, loop, neon, dark background
 
-  removed   ai · generative ai · Midjourney   (AI terms + tool name)
+  removed   ai · generative ai · Midjourney
   deduped   abstract · neon
   fixed     anti-aging -> anti aging · dropped 1 empty keyword · kept acronyms 3D / CGI
 ```
 
-Then the AI takes over the judgment part: it rewrites the flagged title into a cleaner description, replaces genuine IP references with safer generic wording, and orders keywords strongest-first. The result is better prepared for final review and submission.
+The contextual judgment stage then rewrites weak or flagged titles, reviews genuine IP references, and orders keywords from strongest to weakest. The result is better prepared for final review and submission.
 
-That before-and-after example is the real output of the bundled script on [`examples/sample_input.csv`](examples/sample_input.csv), not a mock-up.
+That before-and-after example is based on the bundled script and [`examples/sample_input.csv`](examples/sample_input.csv).
 
 ## Skills
 
 ### `stock-metadata`
 
-Checks, cleans, and optimizes the `Title` and `Keywords` in a metadata CSV for Adobe Stock and Vecteezy, including AI-generated assets. It supports multiple platforms through profiles, and it will:
+Checks, cleans, and optimizes the `Title` and `Keywords` in a metadata CSV for Adobe Stock and Vecteezy, including AI-generated assets. It supports multiple platforms through profiles and will:
 
-- Strip AI-process traces and tool names from the metadata.
-- Flag possible IP, brand, landmark, character, and editorial risks for review.
-- Apply each platform profile's title and keyword limits.
-- Tidy up hyphens, capitalization, duplicates, and empty keywords.
-- On Vecteezy, merge the singular and plural forms of a word automatically.
+- strip AI-process traces and tool names from metadata,
+- flag possible IP, brand, landmark, character, and editorial risks for review,
+- apply each platform profile's title and keyword limits,
+- tidy hyphens, capitalization, duplicates, and empty keywords, and
+- merge singular and plural forms automatically for Vecteezy.
 
 Full rules: [`skills/stock-metadata/SKILL.md`](skills/stock-metadata/SKILL.md).
 
@@ -65,11 +66,11 @@ Full rules: [`skills/stock-metadata/SKILL.md`](skills/stock-metadata/SKILL.md).
 
 Three principles run through every skill:
 
-- Scripts count, the AI judges. Anything you can count or match exactly, such as character counts, duplicates, and banned terms, belongs in a script. Anything that needs contextual reading, such as accuracy, IP safety, and relevance, is left to the AI.
-- Safe by default. When something is unclear, it is flagged for review and never deleted quietly.
-- Rules live in data. Limits and word lists sit in JSON rather than being buried in prose, so they are easier to maintain and extend to new platforms.
+- **Scripts count, the AI judges.** Anything that can be counted or matched exactly belongs in a script. Anything requiring contextual understanding stays in the judgment stage.
+- **Safe by default.** When something is unclear, it is flagged for review and never deleted quietly.
+- **Rules live in data.** Limits and word lists sit in JSON rather than being buried in prose, making them easier to maintain and extend.
 
-Under the hood, each skill is a folder with a `SKILL.md`, plus any scripts and data it needs. The scripts are plain Python 3 with no external dependencies. Once installed in a compatible AI environment, the skill can activate when the context matches, so you do not have to paste long instructions repeatedly.
+Each skill is a folder with a `SKILL.md`, plus any scripts and data it needs. The current skill follows the open Agent Skills directory format. The bundled Python scripts have no external runtime dependencies.
 
 Automated checks reduce avoidable metadata problems, but they cannot guarantee marketplace approval or complete IP clearance. Review the final metadata before submitting it.
 
@@ -79,9 +80,12 @@ Automated checks reduce avoidable metadata problems, but they cannot guarantee m
 
 Opustock Skills is the open-source, self-managed side of that mission. Prefer a hosted batch workflow without installing skills or running scripts? [XMeta by Opustock](https://opustock.com/xmeta) provides the managed experience.
 
-## Compatibility
+## Requirements and compatibility
 
-The core skill uses portable Markdown instructions, Python 3 scripts, and JSON rule profiles. The current release has been tested with Claude and Codex. Installation and activation behavior may vary between AI environments.
+- The instructions use the portable Agent Skills format.
+- Python 3.10 or newer is required to run the bundled scripts and package builder.
+- No external Python packages or network access are required at runtime.
+- Installation and automatic activation behavior can vary between compatible AI environments.
 
 ## Install
 
@@ -91,22 +95,35 @@ The core skill uses portable Markdown instructions, Python 3 scripts, and JSON r
 python scripts/build.py
 ```
 
-The file lands in `dist/<skill-name>.skill`.
+The package is written to `dist/<skill-name>.skill`.
 
-Every folder under `skills/` is also a complete skill. A `.skill` file is a ZIP archive, so you can package or install the folder according to the requirements of your AI environment.
+Every folder under `skills/` is also a complete skill. A `.skill` file is a ZIP archive containing the skill folder at the archive root.
 
-### Install in a tested environment
+### Install in a compatible environment
 
-- In Claude, open Settings > Capabilities > Skills > Upload skill and choose the generated `.skill` file.
-- In Codex, install the package through the plugin system or place the skill folder in the supported skills directory.
+- In ChatGPT Skills, choose **Create**, then **Upload from your computer**, and select the generated `.skill` file.
+- In Codex or another Agent Skills-compatible client, install the package or skill folder using that client's supported workflow.
 
-After installation, upload your metadata CSV and ask for what you need, for example: *"optimize this metadata for Vecteezy"*.
+After installation, upload your metadata CSV and ask for what you need, for example: *"Optimize this metadata for Vecteezy."*
 
 ### Run the deterministic gate directly
 
 ```bash
-python skills/stock-metadata/scripts/validate_clean.py examples/sample_input.csv --platform vecteezy
+python skills/stock-metadata/scripts/validate_clean.py \
+  examples/sample_input.csv \
+  --platform vecteezy
 ```
+
+## Development
+
+Run the quality checks locally:
+
+```bash
+python -m unittest discover -s tests -v
+python scripts/build.py
+```
+
+The GitHub Actions workflow runs tests, validates the JSON reference files, compiles the Python source, builds every skill, and checks the resulting package structure.
 
 ## Examples
 
@@ -126,7 +143,7 @@ Have an idea? [Open an issue](https://github.com/debikurnia/opustock-skills/issu
 
 ## Contributing
 
-Contributions are welcome. The short version: one skill is one folder under `skills/` with a `SKILL.md` inside. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for the ground rules.
+Contributions are welcome. One skill is one folder under `skills/` with a `SKILL.md` inside. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for the ground rules.
 
 ## License
 
@@ -134,7 +151,7 @@ Contributions are welcome. The short version: one skill is one folder under `ski
 
 ## Author
 
-An open-source project by [Opustock](https://opustock.com), created by Debi Kurnia.
+An open-source project by [Opustock](https://opustock.com), created by Debi Kurnia.  
 GitHub: [@debikurnia](https://github.com/debikurnia)
 
 If Opustock Skills improves your workflow, a star on the repo is appreciated.

@@ -2,163 +2,201 @@
 name: stock-metadata
 description: >-
   Check, clean, and optimize stock metadata (Title and Keywords) in CSV files for
-  stock asset marketplaces such as Adobe Stock and Vecteezy, including Generative AI
-  assets (video or image). ALWAYS use this skill whenever the user uploads or mentions
-  a stock metadata CSV file, or asks to: check/clean/optimize titles and keywords,
-  report IP/brand/banned-keyword/keyword-stuffing/over-limit violations, remove traces
-  of the AI process from metadata, prepare metadata for upload to Adobe Stock or
-  Vecteezy, even if the word "skill" is not mentioned. Triggers include: a CSV with
-  Filename/Title/Keywords columns, phrases like "stock metadata", "optimize keywords",
-  "check CSV", "clean AI keywords", "review asset metadata", "prepare for Vecteezy/Adobe Stock".
+  stock asset marketplaces such as Adobe Stock and Vecteezy, including
+  AI-generated image and video assets. Use whenever the user uploads or mentions
+  a stock metadata CSV, asks to check or optimize titles and keywords, requests
+  IP or banned-term review, wants AI-process traces removed, or needs metadata
+  prepared for Adobe Stock or Vecteezy. Typical inputs contain Filename, Title,
+  and Keywords columns.
+license: MIT
+compatibility: >-
+  Requires Python 3.10+ to run the bundled deterministic cleanup script. No
+  external Python packages or network access are required.
+metadata:
+  author: Opustock
+  version: "1.0.0"
 ---
 
-# Stock Metadata Optimization (Multi-Platform)
+# Stock Metadata Optimization
 
-A skill to check, clean, and optimize the `Title` and `Keywords` in metadata CSV files
-for stock marketplaces. Supports multiple platforms via profiles (see
-`references/platforms.json`); currently: **Adobe Stock** and **Vecteezy**. Applies to all
-asset types (realistic, abstract, 3D, CGI, illustration, lifestyle, nature, beauty, food,
-interior, science, etc.), with special attention to Generative AI assets: all traces of the
-AI creation process must be removed from the metadata.
+Check, clean, and optimize `Title` and `Keywords` fields in stock metadata CSV files.
+
+The skill supports platform profiles in `references/platforms.json`. The current profiles are **Adobe Stock** and **Vecteezy**. It applies to image and video assets across realistic, abstract, 3D, CGI, illustration, lifestyle, nature, beauty, food, interior, science, and other stock categories.
+
+For AI-generated assets, remove metadata that describes the creation process rather than the visible subject.
 
 ## Core principle
 
-The work splits in two, and each part goes to whoever is most reliable at it:
+Split the work according to what can be done reliably:
 
-1. **Mechanical** (count characters/words/keywords, detect duplicates and banned terms, lowercase,
-   dehyphenate) goes to `scripts/validate_clean.py`. Do not count by hand; run the script.
-2. **Judgment** (whether the title matches the visual, which IP terms to swap and what to swap
-   them for, keyword relevance ordering) goes to the LLM. This needs understanding, not rigid rules.
+1. **Mechanical checks** belong to `scripts/validate_clean.py`. This includes counting, normalization, duplicate removal, exact banned-term matching, and platform-limit checks.
+2. **Contextual judgment** belongs to the AI. This includes visual accuracy, relevance ordering, contextual IP decisions, and safe generic replacements.
 
-## CSV-only mode (important)
+Do not count or normalize by hand when the script can do it deterministically.
 
-The CSV file **contains no images**. The "asset visual" is only implied by the combination of
-the existing Title and Keywords. Because of that:
+## CSV-only mode
 
-- **Never invent new visual details** that aren't supported by the original metadata (colors,
-  objects, settings mentioned nowhere). Work from what's there.
-- Your job: make that metadata accurate, concise, safe, and strongly ordered. The goal is not
-  to add claims.
-- If a row's metadata is too sparse to judge, say so plainly and ask the user to fill it in,
-  rather than guessing.
+The CSV usually contains no image. The implied visual is derived only from the existing title and keywords.
+
+- Never invent colors, objects, settings, people, actions, or other visual details not supported by the original metadata.
+- Make the metadata accurate, concise, safer, and strongly ordered without adding unsupported claims.
+- When a row is too sparse to assess, explain the limitation instead of guessing.
 
 ## Workflow
 
 ### 1. Determine the platform
 
-Ask or infer the target platform (Adobe Stock or Vecteezy). If the user doesn't mention one
-and it can't be inferred from context, **ask first**, because the limits and title rules
-differ. See `references/platforms.json` for the available profiles.
+Ask or infer whether the target is Adobe Stock or Vecteezy. When it cannot be inferred, ask before processing because platform limits and title rules differ.
+
+Available profiles are defined in `references/platforms.json`.
 
 ### 2. Run the deterministic gate
 
 ```bash
-python scripts/validate_clean.py <input.csv> --platform <adobe_stock|vecteezy> \
-  --out <input>.cleaned.csv --report <input>.report.json
+python scripts/validate_clean.py <input.csv> \
+  --platform <adobe_stock|vecteezy> \
+  --out <input>.cleaned.csv \
+  --report <input>.report.json
 ```
 
-Produces a mechanically cleaned CSV plus a per-row JSON report. The script counts Title
-length/words and keyword count (per the platform limit), removes AI/tool/process terms,
-dehyphenates, lowercases except acronyms, drops duplicates and empty keywords, flags title words
-the platform discourages, and **flags** IP-risky terms for you to review. The `Filename`,
-`Category`, and `Releases` columns are left untouched.
+The script:
+
+- counts title characters and words,
+- counts keywords,
+- removes configured AI-process and tool terms,
+- replaces keyword hyphens with spaces,
+- lowercases keywords except allowlisted acronyms,
+- removes duplicates and empty keywords,
+- applies singular/plural handling when enabled by the platform profile,
+- flags discouraged title words, and
+- flags configured IP and sensitive terms for contextual review.
+
+It preserves the original column order and the values of fields other than `Keywords`. The script does not rewrite titles.
 
 ### 3. Report findings
 
-Read `report.json`. Present a summary per category referencing the `Filename`:
-IP/brand/trademark; person/character names; specific landmarks/locations; editorial/institutions/
-events; sensitive content/medical claims; AI/tool terms (already removed, so just report them);
-title technical; keyword technical; keyword stuffing/speculative/irrelevant.
+Read the JSON report and summarize findings by `Filename` under relevant categories:
 
-**Important note on flagged terms (flag_for_review):** many brands are common words
-(apple, dove, shell, corona, polo, jaguar, puma, subway, visa). Judge per context: if it clearly
-refers to a common object (the apple fruit, a dove bird) and not a brand, **leave it**. Only swap
-when it genuinely refers to a protected brand/IP.
+- IP, brand, and trademark,
+- person or character names,
+- specific landmarks and locations,
+- institutions, events, and editorial subjects,
+- sensitive content and medical claims,
+- removed AI-process or tool terms,
+- title-limit or title-quality issues,
+- keyword-limit and formatting issues, and
+- speculative, irrelevant, or stuffed keywords identified during review.
 
-### 4. Per-row judgment optimization
+Terms under `flag_for_review` are alerts, not automatic violations. Common words such as apple, dove, shell, corona, polo, jaguar, puma, subway, and visa require contextual judgment. Keep them when they clearly refer to an ordinary object or concept.
 
-Apply the TITLE (per platform), KEYWORD, and IP-SWAP rules below. Rows that are already clean
-and not in violation **leave as-is**. Don't rewrite without a reason.
+### 4. Perform contextual optimization
+
+Apply the title, keyword, and IP rules below. Leave already-clean rows unchanged. Do not rewrite metadata without a reason.
 
 ### 5. Return the result
 
-- The **final upload-ready CSV** (present as a downloadable file); offer a fenced CSV
-  if asked.
-- A **concise change summary**, plus 2-3 before/after examples of the rows that changed most.
-- Don't change `Filename`, `Category`, `Releases`.
+Return:
 
-## TITLE rules (per platform)
+- the complete final CSV as a downloadable file,
+- a concise summary of changes, and
+- two or three before-and-after examples from the most meaningful changes.
 
-Rewrite only if in violation/weak. Avoid empty generic titles ("Loop", "Abstract
-Background") unless that genuinely is the most honest description. Don't make a synthetic asset
-look like real-world documentation when it isn't clear. **Strictly forbidden on all platforms:**
-"Generative AI", "AI", AI model/tool names, prompt terms, technical production-process claims.
+Do not alter `Filename`, `Category`, `Releases`, or other non-metadata fields.
 
-**Adobe Stock:** Title Case, descriptive, ideally 70-100 chars (max 200). Pattern:
-`[main subject] + [descriptor/action] + [setting/context]`.
-Example: `Glowing Blue Neon Light Flowing in Seamless Motion on a Dark Background`
+## Title rules
 
-**Vecteezy:** concise **3-8 words, under 70 characters**, professional and grammatical.
-**Do not** include resolution/technical words ("4K", "footage", "video", "HD") or subjective
-adjectives ("beautiful", "amazing", "stunning", "perfect"); the script flags them.
-Example: `Neon Light Flowing on Dark Background`
+Rewrite a title only when it is weak or violates a rule. Avoid empty generic titles such as `Loop` or `Abstract Background` unless that is genuinely the most accurate description.
 
-If the title is over the limit, trim from the trailing clause, don't drop the main subject.
+Do not make a synthetic asset sound like documentary evidence of a real event.
 
-## KEYWORD rules
+Forbidden across supported profiles:
 
-- Lowercase except common acronyms (CGI, DNA, mRNA, 3D, 4K, etc.). The script handles this.
-- **Order from most relevant to weakest** as an explicit step. Early keywords are weighted
-  more heavily by search: **Adobe Stock = top 10**, **Vecteezy = top 5**.
-- **Ordering heuristic:** (1) main subject, (2) prominent visual elements, (3) setting/environment,
-  (4) material/texture/color/lighting, (5) relevant mood/concept, (6) technical/style terms
-  (loop, seamless, animation, CGI, 3D render, motion graphics) **last, and only when
-  genuinely applicable**.
-- **Limits:** Adobe Stock max 49; Vecteezy max 50 (recommended ~20-30, minimum 5). If after
-  ordering it still exceeds, trim from the tail.
-- **Trim the weak** even before reaching the limit: drop speculative, overly generic, or
-  metadata-unsupported keywords. Precision beats length. Don't force a uniform keyword pack.
-- Vecteezy: the **one-form-per-word** rule is now automatic. The script merges singular/plural
-  pairs that appear together (e.g. flower+flowers, child+children) and keeps the first
-  occurrence. For ambiguous pairs that mean something different (e.g. glass/glasses, arm/arms)
-  the script does NOT merge but flags them `possible_dual_form_check`, so review and decide
-  manually.
+- `AI` or `Generative AI`,
+- model and tool names,
+- prompt terminology, and
+- technical creation-process claims.
 
-## Generative AI safety gate
+### Adobe Stock
 
-Enforced automatically (see `references/banned_terms.json`), but still check: there must be no
-model/tool names (Midjourney, Firefly, DALL-E, Sora, Stable Diffusion, Runway, etc.),
-process terms (prompt, upscale, seed, text to image, render engine), artist/studio names,
-or "in the style of ..." phrases. Always prefer a generic visual description over a specific
-IP-risky reference.
+Use a descriptive Title Case title, ideally 70 to 100 characters and no more than 200 characters.
 
-## Safe IP replacement table
+Suggested pattern:
 
-When the script flags `flag_for_review` and the term genuinely refers to a protected brand/IP:
+```text
+[main subject] + [descriptor or action] + [setting or context]
+```
 
-| Found | Replace with (example) |
+Example:
+
+```text
+Glowing Blue Neon Light Flowing in Seamless Motion on a Dark Background
+```
+
+### Vecteezy
+
+Use a concise, grammatical title of 3 to 8 words and fewer than 70 characters.
+
+Do not include:
+
+- resolution or asset-type words such as `4K`, `HD`, `footage`, or `video`, or
+- subjective adjectives such as `beautiful`, `amazing`, `stunning`, or `perfect`.
+
+Example:
+
+```text
+Neon Light Flowing on Dark Background
+```
+
+When trimming an over-limit title, remove a trailing clause before removing the main subject.
+
+## Keyword rules
+
+- Use lowercase except for allowlisted acronyms such as `CGI`, `DNA`, `mRNA`, and `3D`.
+- Order keywords from strongest to weakest.
+- Prioritize the main subject, prominent visual elements, setting, material, color, lighting, relevant concepts, and finally technical or style terms.
+- Keep technical terms such as `loop`, `seamless`, `animation`, `CGI`, `3D render`, or `motion graphics` only when genuinely supported.
+- Adobe Stock allows up to 49 keywords. Its top 10 keywords deserve particular attention.
+- Vecteezy allows up to 50 keywords, with roughly 20 to 30 recommended. Its first 5 keywords deserve particular attention.
+- Remove weak, speculative, overly generic, or unsupported terms even when the row remains under the maximum.
+- Do not force every row into a uniform keyword count.
+
+For Vecteezy, the script merges clear singular/plural pairs while keeping the first occurrence. Ambiguous pairs such as `glass/glasses` and `arm/arms` remain and are flagged for manual review.
+
+## AI-process safety gate
+
+The deterministic script uses `references/banned_terms.json` to remove configured process and tool terms. Still review the result for:
+
+- model and tool names,
+- prompt and generation terminology,
+- artist or studio names,
+- style imitation phrases, and
+- technical process descriptions.
+
+Prefer a generic visual description over a specific protected reference.
+
+## Safe IP replacement examples
+
+When a flagged term genuinely refers to protected IP, replace it with accurate generic wording.
+
+| Found | Generic replacement example |
 |---|---|
-| Brand/product (Coca-Cola, iPhone) | "red soda can", "modern smartphone" |
-| Specific landmark (Eiffel Tower) | "ornate iron lattice tower at dusk" |
-| Real person's name | "businesswoman", "young athlete" |
-| Character/franchise | "cartoon superhero figure" |
-| Artist name / artist style | "impressionist style", "vibrant brushstrokes" |
-| Institution (NASA, FBI) | "space agency style emblem", "investigator" |
-| Branded event (Olympics) | "international sports event" |
-| Medical/cosmetic claim | neutralize: "skincare", "wellness"; drop "proven/cure" |
+| Brand or product | `red soda can`, `modern smartphone` |
+| Specific landmark | `ornate iron lattice tower at dusk` |
+| Real person's name | `businesswoman`, `young athlete` |
+| Character or franchise | `cartoon superhero figure` |
+| Artist or artist style | `impressionist style`, `vibrant brushstrokes` |
+| Institution | `space agency style emblem`, `investigator` |
+| Branded event | `international sports event` |
+| Medical or cosmetic claim | neutral `skincare` or `wellness` wording |
 
-**Manual flags** (report even if the script doesn't catch them): names of modern buildings with
-architectural copyright, brand-like words, slogans/trade dress, exaggerated medical claims.
+Also review modern buildings, slogans, trade dress, and exaggerated medical claims even when the reference list does not catch them.
 
 ## Output format
 
-Preserve the original columns (`Filename, Title, Keywords, Category, Releases`, and any other
-columns present). Keywords separated by `, `. The final output is the full CSV (a downloadable
-file), not a snippet, unless the user asks for a sample.
+Preserve every original column and its order. Use `, ` between keywords. Return the complete CSV unless the user explicitly asks for a sample.
 
 ## Maintaining and extending
 
-- Add new AI tool / brand / banned terms to `references/banned_terms.json`.
-- Add a new platform (Shutterstock, Freepik, Pond5, 123RF) by copying a block in
-  `references/platforms.json` and adjusting its limits and title rules. No need to change the
-  script.
+- Add AI tool, brand, and review terms to `references/banned_terms.json`.
+- Add a platform by copying a profile in `references/platforms.json` and adjusting its limits and title rules.
+- Add regression tests whenever deterministic behavior changes.
