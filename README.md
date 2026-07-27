@@ -165,11 +165,18 @@ More skills planned for the collection:
 - [ ] `csv-merge`: combine or reconcile several metadata exports.
 - [ ] `release-tracker`: track model and property releases per asset.
 
-Have an idea? [Open an issue](https://github.com/debikurnia/opustock-skills/issues).
+Have an idea? [Choose the matching issue form](https://github.com/debikurnia/opustock-skills/issues/new/choose).
 
 ## Contributing
 
 Contributions are welcome. One skill is one folder under `skills/` with a `SKILL.md` inside. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for the ground rules.
+
+## Project governance
+
+- Use the structured issue forms for bugs, metadata terms, platform requests, and new skill proposals.
+- High-impact metadata rules, release workflows, security files, and governance documents require maintainer review through `CODEOWNERS`.
+- Report vulnerabilities privately according to [SECURITY.md](SECURITY.md).
+- Metadata term changes must follow [`TERM_POLICY.md`](skills/stock-metadata/references/TERM_POLICY.md) and include positive, false-positive, and regression-test evidence.
 
 ## License
 
