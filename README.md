@@ -174,7 +174,7 @@ Contributions are welcome. One skill is one folder under `skills/` with a `SKILL
 ## Project governance
 
 - Use the structured issue forms for bugs, metadata terms, platform requests, and new skill proposals.
-- High-impact metadata rules, release workflows, security files, and governance documents require maintainer review through `CODEOWNERS`.
+- High-impact metadata rules, release workflows, security files, and governance documents are routed to the maintainer through `CODEOWNERS`.
 - Report vulnerabilities privately according to [SECURITY.md](SECURITY.md).
 - Metadata term changes must follow [`TERM_POLICY.md`](skills/stock-metadata/references/TERM_POLICY.md) and include positive, false-positive, and regression-test evidence.
 
