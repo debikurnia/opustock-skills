@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-build.py - Paketkan setiap skill di skills/ menjadi file .skill di dist/.
+build.py - Package each skill in skills/ into a .skill file in dist/.
 
-Sebuah file .skill hanyalah arsip ZIP dari folder skill (dengan folder skill
-berada di akar arsip). Script ini tanpa dependensi eksternal.
+A .skill file is just a ZIP archive of the skill folder (with the skill folder
+at the root of the archive). This script has no external dependencies.
 
-Pemakaian:
-    python scripts/build.py            # build semua skill
-    python scripts/build.py <nama>     # build satu skill tertentu
+Usage:
+    python scripts/build.py            # build all skills
+    python scripts/build.py <name>     # build one specific skill
 """
 
 import sys
@@ -23,7 +23,7 @@ EXCLUDE_NAMES = {".DS_Store"}
 
 def build_skill(skill_dir: Path) -> Path | None:
     if not (skill_dir / "SKILL.md").exists():
-        print(f"  lewati {skill_dir.name}: tidak ada SKILL.md")
+        print(f"  skip {skill_dir.name}: no SKILL.md")
         return None
     DIST_DIR.mkdir(exist_ok=True)
     out = DIST_DIR / f"{skill_dir.name}.skill"
@@ -35,14 +35,14 @@ def build_skill(skill_dir: Path) -> Path | None:
                 continue
             if path.name in EXCLUDE_NAMES or path.suffix == ".pyc":
                 continue
-            # arcname relatif ke skills/, sehingga folder skill jadi akar arsip
+            # arcname relative to skills/, so the skill folder becomes the archive root
             z.write(path, path.relative_to(SKILLS_DIR))
     return out
 
 
 def main():
     if not SKILLS_DIR.exists():
-        print("Tidak ada folder skills/."); sys.exit(1)
+        print("No skills/ folder."); sys.exit(1)
 
     target = sys.argv[1] if len(sys.argv) > 1 else None
     dirs = [SKILLS_DIR / target] if target else sorted(
@@ -51,16 +51,16 @@ def main():
     built = []
     for d in dirs:
         if not d.exists():
-            print(f"Skill '{d.name}' tidak ditemukan."); continue
+            print(f"Skill '{d.name}' not found."); continue
         result = build_skill(d)
         if result:
             built.append(result)
             print(f"  ✅ {result.relative_to(ROOT)}")
 
     if built:
-        print(f"\nSelesai: {len(built)} skill dipaketkan ke dist/")
+        print(f"\nDone: {len(built)} skill(s) packaged into dist/")
     else:
-        print("Tidak ada skill yang dipaketkan.")
+        print("No skills were packaged.")
 
 
 if __name__ == "__main__":

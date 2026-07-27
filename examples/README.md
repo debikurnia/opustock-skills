@@ -1,18 +1,22 @@
-# Contoh
+# Examples
 
-`sample_input.csv` adalah metadata mentah dengan beragam masalah yang umum ditemui:
-istilah AI (`ai`, `generative ai`), nama tool (`Midjourney`), duplikat (`abstract`,
-`neon`), tanda hubung (`anti-aging`), huruf besar (`FLOWER`), keyword kosong (koma di
-akhir), landmark berisiko IP (`Eiffel Tower`), title generik (`Loop`), dan pasangan
-singular/plural (`flower`/`flowers`).
+`sample_input.csv` is raw metadata with a variety of common issues:
+AI terms (`ai`, `generative ai`), tool names (`Midjourney`), duplicates (`abstract`,
+`neon`), hyphens (`anti-aging`), uppercase (`FLOWER`), empty keywords (trailing
+comma), IP-risky landmarks (`Eiffel Tower`), a generic title (`Loop`), and a
+singular/plural pair (`flower`/`flowers`).
 
-Coba sendiri di Claude setelah meng-install skill `stock-metadata`:
+After installing the `stock-metadata` skill in a compatible AI environment, try:
 
-> Unggah `sample_input.csv` dan minta: *"Periksa dan optimasi metadata ini untuk Adobe Stock"*
-> atau *"...untuk Vecteezy"* — bandingkan perbedaan limit & aturannya.
+> Upload `sample_input.csv` and ask: *"Check and optimize this metadata for Adobe Stock"*
+> or *"...for Vecteezy"*, then compare the difference in limits and rules.
 
-Atau jalankan gerbang mekanisnya langsung:
+The current release has been tested with Claude and Codex, but the example is intentionally written without depending on a specific AI vendor.
+
+You can also run the deterministic gate directly:
 
 ```bash
 python skills/stock-metadata/scripts/validate_clean.py examples/sample_input.csv --platform vecteezy
 ```
+
+The generated output should be treated as preparation for final review, not as a guarantee of marketplace approval or complete IP clearance.

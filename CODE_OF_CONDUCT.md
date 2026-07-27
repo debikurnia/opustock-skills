@@ -1,7 +1,7 @@
-# Kode Etik
+# Code of Conduct
 
-Proyek ini mengadopsi [Contributor Covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) versi 2.1 sebagai kode etiknya.
+This project adopts the [Contributor Covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) version 2.1 as its code of conduct.
 
-Singkatnya: bersikaplah hormat, ramah, dan konstruktif. Pelecehan, diskriminasi, dan perilaku merendahkan tidak ditoleransi. Maintainer berhak menghapus kontribusi atau komentar yang melanggar.
+In short: be respectful, friendly, and constructive. Harassment, discrimination, and demeaning behavior are not tolerated. Maintainers reserve the right to remove contributions or comments that violate this.
 
-Laporkan masalah perilaku melalui issue atau kontak yang tercantum di profil maintainer.
+Report conduct issues via an issue or the contact listed on the maintainer's profile.
