@@ -1,0 +1,88 @@
+name: Skill proposal
+description: Propose a new focused skill or a material workflow capability.
+title: "[Skill proposal]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A good skill has one focused job, clear activation contexts, predictable inputs and outputs, and a useful separation between deterministic work and contextual judgment.
+
+  - type: input
+    id: skill_name
+    attributes:
+      label: Proposed skill name
+      description: Use a short lowercase hyphenated name when possible.
+      placeholder: batch-rename
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Contributor problem
+      description: Explain the repeated stock-contributor workflow problem this skill would solve.
+    validations:
+      required: true
+
+  - type: textarea
+    id: activation
+    attributes:
+      label: Activation contexts
+      description: List the requests, files, or phrases that should activate the skill.
+      placeholder: CSV filenames, requests to normalize asset filenames, or batch rename instructions
+    validations:
+      required: true
+
+  - type: textarea
+    id: inputs_outputs
+    attributes:
+      label: Inputs and outputs
+      description: Describe the expected input files or context and the exact deliverables.
+    validations:
+      required: true
+
+  - type: textarea
+    id: deterministic
+    attributes:
+      label: Deterministic work
+      description: Identify counting, validation, parsing, formatting, or transformations that should be handled by code.
+    validations:
+      required: true
+
+  - type: textarea
+    id: judgment
+    attributes:
+      label: Contextual judgment
+      description: Identify decisions that require visual, semantic, relevance, or safety judgment.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Examples or evidence
+      description: Provide redacted examples, existing manual workflows, or official platform references that show the need.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Explain whether the need can be solved by an existing skill, script, or documentation change.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I searched existing issues, Pull Requests, skills, and the roadmap for overlap.
+          required: true
+        - label: The proposal is focused on one coherent job rather than a general-purpose assistant.
+          required: true
+        - label: The proposed core behavior can remain useful without a hosted Opustock product.
+          required: true
+        - label: I removed private contributor and asset information from examples.
+          required: true
