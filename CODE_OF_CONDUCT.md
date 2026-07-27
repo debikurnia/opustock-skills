@@ -8,7 +8,7 @@ In short: be respectful, friendly, and constructive. Harassment, discrimination,
 
 Do not include sensitive conduct details in a public issue, discussion, or Pull Request.
 
-Use a private contact method listed on the maintainer's [GitHub profile](https://github.com/debikurnia). If no private contact method is available, open a minimal public issue requesting private contact without naming people or describing the incident.
+Use the **Report a conduct concern privately** contact link in the repository issue chooser, then use a private contact method listed on the maintainer's [GitHub profile](https://github.com/debikurnia). If no private contact method is available, do not disclose incident details publicly.
 
 Reports should include, when safe to provide:
 
