@@ -1,0 +1,84 @@
+name: Platform request
+description: Propose support for a new stock marketplace or a material profile update.
+title: "[Platform]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Platform rules change over time. Proposals should rely on current official contributor documentation whenever it is available.
+
+  - type: input
+    id: platform_name
+    attributes:
+      label: Platform name
+      placeholder: Shutterstock
+    validations:
+      required: true
+
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: Request type
+      options:
+        - Add a new platform profile
+        - Update an existing platform profile
+        - Add support for a platform-specific CSV format
+        - Clarify documentation only
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Contributor use case
+      description: Explain the workflow this support would enable and the asset types involved.
+    validations:
+      required: true
+
+  - type: textarea
+    id: official_sources
+    attributes:
+      label: Current official documentation
+      description: Provide contributor-guideline, metadata, CSV, or submission-rule links from the platform.
+      placeholder: One source per line
+    validations:
+      required: true
+
+  - type: textarea
+    id: rules
+    attributes:
+      label: Known title and keyword rules
+      description: Include limits, ordering behavior, prohibited terms, singular/plural treatment, and other deterministic rules supported by the sources.
+    validations:
+      required: true
+
+  - type: textarea
+    id: csv_format
+    attributes:
+      label: Redacted CSV structure or sample
+      description: Show headers and one synthetic or redacted row when the platform uses a distinct format.
+      render: csv
+    validations:
+      required: false
+
+  - type: textarea
+    id: differences
+    attributes:
+      label: Differences from existing profiles
+      description: Explain why Adobe Stock or Vecteezy behavior cannot be reused unchanged.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I checked the current official documentation rather than relying only on memory or third-party articles.
+          required: true
+        - label: I searched existing issues and Pull Requests for this platform.
+          required: true
+        - label: I removed private contributor and asset information from samples.
+          required: true
+        - label: I understand that accepted platform behavior requires regression tests.
+          required: true
