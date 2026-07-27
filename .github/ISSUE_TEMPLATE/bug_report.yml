@@ -1,0 +1,110 @@
+name: Bug report
+description: Report a reproducible problem in a skill, script, package, or workflow.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Redact private filenames, credentials, releases, customer data, and unpublished asset information before submitting.
+
+  - type: input
+    id: version
+    attributes:
+      label: Opustock Skills version
+      description: Use the GitHub Release version, tag, or commit SHA.
+      placeholder: v1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - stock-metadata skill instructions
+        - validate_clean.py
+        - build or package output
+        - metadata term rules
+        - platform profile
+        - GitHub Actions or release workflow
+        - documentation
+        - other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Target stock platform
+      options:
+        - Adobe Stock
+        - Vecteezy
+        - Not platform-specific
+        - Other or unsupported
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Include operating system, Python version, and AI environment when relevant.
+      placeholder: macOS 15, Python 3.12, ChatGPT Skills
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Provide the smallest repeatable sequence that shows the problem.
+      placeholder: |
+        1. Run ...
+        2. Use this redacted input ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: sample
+    attributes:
+      label: Redacted sample input
+      description: Paste a minimal CSV row, JSON fragment, command, or file structure. Remove sensitive data.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or report output
+      description: Paste relevant error text or a redacted report fragment.
+      render: text
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I searched existing issues and Pull Requests for the same problem.
+          required: true
+        - label: I removed credentials and private or identifying data from the report.
+          required: true
+        - label: This is not a security vulnerability. Security issues are reported privately through SECURITY.md.
+          required: true
